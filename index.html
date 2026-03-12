@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Master Investment Reading List</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #faf8f5;
+    --text: #1a1a1a;
+    --muted: #6b6b6b;
+    --accent: #8b6914;
+    --accent-light: #f5eddb;
+    --border: #e0dcd5;
+    --section-bg: #ffffff;
+    --star: #d4a017;
+    --tier1: #2d5016;
+    --tier2: #1a4a6e;
+    --tier3: #6e3a1a;
+    --tier4: #5c1a6e;
+    --tier5: #6e1a2d;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 0;
+  }
+
+  .cover {
+    text-align: center;
+    padding: 100px 40px 80px;
+    border-bottom: 3px double var(--accent);
+    margin-bottom: 40px;
+    background: linear-gradient(180deg, #fff 0%, var(--bg) 100%);
+  }
+
+  .cover h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 42px;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+
+  .cover .subtitle {
+    font-size: 18px;
+    color: var(--muted);
+    font-weight: 300;
+    margin-bottom: 30px;
+  }
+
+  .cover .stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    margin-top: 30px;
+  }
+
+  .cover .stat {
+    text-align: center;
+  }
+
+  .cover .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+
+  .cover .stat-label {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--muted);
+  }
+
+  .legend {
+    max-width: 800px;
+    margin: 0 auto 40px;
+    padding: 20px 30px;
+    background: var(--accent-light);
+    border-radius: 8px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .legend strong { color: var(--text); }
+  .legend .star-icon { color: var(--star); font-size: 16px; }
+
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 30px 60px;
+  }
+
+  .tier-header {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    padding: 15px 0 5px;
+    margin-top: 50px;
+    margin-bottom: 5px;
+    color: var(--muted);
+  }
+
+  .tier-header.t1 { color: var(--tier1); border-bottom: 2px solid var(--tier1); }
+  .tier-header.t2 { color: var(--tier2); border-bottom: 2px solid var(--tier2); }
+  .tier-header.t3 { color: var(--tier3); border-bottom: 2px solid var(--tier3); }
+  .tier-header.t4 { color: var(--tier4); border-bottom: 2px solid var(--tier4); }
+  .tier-header.t5 { color: var(--tier5); border-bottom: 2px solid var(--tier5); }
+
+  .tier-desc {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+
+  .section {
+    margin-bottom: 35px;
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 16px 20px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .section-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 30px;
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .section-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--accent-light);
+    padding: 2px 10px;
+    border-radius: 12px;
+  }
+
+  .book-list {
+    list-style: none;
+    padding: 10px 20px 15px;
+  }
+
+  .book-list li {
+    padding: 6px 0;
+    font-size: 14px;
+    border-bottom: 1px solid #f0ede8;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  .book-list li:last-child { border-bottom: none; }
+
+  .book-list li.starred {
+    font-weight: 500;
+  }
+
+  .book-list li .star {
+    color: var(--star);
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .book-list li .author {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 300;
+  }
+
+  .book-list li .note {
+    color: var(--accent);
+    font-size: 11px;
+    font-style: italic;
+  }
+
+  .footer {
+    text-align: center;
+    padding: 40px;
+    color: var(--muted);
+    font-size: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+  }
+
+  @media print {
+    body { padding: 0; background: #fff; }
+    .cover { padding: 60px 30px 50px; }
+    .section { break-inside: avoid; }
+    .tier-header { break-after: avoid; }
+    .container { padding: 0 20px 30px; }
+  }
+
+  @media (max-width: 600px) {
+    .cover h1 { font-size: 28px; }
+    .cover .stats { flex-direction: column; gap: 15px; }
+    .container { padding: 0 15px 40px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>The Master Investment Reading List</h1>
+  <p class="subtitle">A structured learning path from personal finance to macro investing</p>
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-num">500+</div>
+      <div class="stat-label">Books</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">22</div>
+      <div class="stat-label">Categories</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">5</div>
+      <div class="stat-label">Tiers</div>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="legend">
+  <span class="star-icon">&#9733;</span> = <strong>Must-read</strong> — If you only read a handful per category, read the starred ones first. Every book from the original list is included; stars mark the essentials.
+</div>
+
+<!-- ============================================ -->
+<div class="tier-header t1">Tier 1 — Foundations</div>
+<p class="tier-desc">Build the base. Learn how money, economies, and markets actually work.</p>
+<!-- ============================================ -->
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">1</span>
+    <span class="section-title">Personal Finance Basics</span>
+    <span class="section-count">27 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> I Will Teach You To Be Rich <span class="author">— Ramit Sethi</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Simple Path To Wealth <span class="author">— JL Collins</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Total Money Makeover <span class="author">— Dave Ramsey</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Your Money or Your Life <span class="author">— Vicki Robin</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Millionaire Next Door / The Millionaire Mind <span class="author">— Thomas Stanley</span></li>
+    <li>Personal Finance 101</li>
+    <li>I'll Teach You To Be Rich: The Journal <span class="author">— Ramit Sethi</span></li>
+    <li>Money For Couples</li>
+    <li>Set For Life</li>
+    <li>The Barefoot Investor</li>
+    <li>You Need a Budget</li>
+    <li>The Millionaire Fastlane <span class="author">— MJ DeMarco</span></li>
+    <li>Rich Dad Poor Dad <span class="author">— Robert Kiyosaki</span></li>
+    <li>Rich Dad's Cashflow Quadrant <span class="author">— Robert Kiyosaki</span></li>
+    <li>The Science of Getting Rich</li>
+    <li>Secrets of the Millionaire Mind</li>
+    <li>Millionaire Teacher</li>
+    <li>The Millionaire in You</li>
+    <li>How To Be Rich <span class="author">— Paul Getty</span></li>
+    <li>The Only Investment Guide You'll Ever Need</li>
+    <li>How To Make Your Money Last</li>
+    <li>Financial Freedom: A Proven Path</li>
+    <li>The Wealthy Barber</li>
+    <li>J.K. Lasser's 1001 Deductions and Tax Breaks 2026</li>
+    <li>The Tax and Legal Playbook</li>
+    <li>Protecting Your Wealth in Good Times and Bad</li>
+    <li>You've Lost It, Now What</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">2</span>
+    <span class="section-title">Economics Fundamentals</span>
+    <span class="section-count">30 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Basic Economics, Vol 1 &amp; 2 <span class="author">— Thomas Sowell</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Economics in One Lesson / The 6 Lessons <span class="author">— Mises</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Talking to My Daughter About the Economy <span class="author">— Yanis Varoufakis</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Wealth of Nations <span class="author">— Adam Smith</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Naked Economics</li>
+    <li>Economics 101 <span class="author">— Alfred Mill</span></li>
+    <li>How an Economy Grows</li>
+    <li>Economics For Dummies</li>
+    <li>Mankiw's Principles of Economics</li>
+    <li>Principles Of Economics</li>
+    <li>Principles of Microeconomics</li>
+    <li>Principles of Macroeconomics</li>
+    <li>Foundation Of Economics <span class="author">— Yanis Varoufakis</span></li>
+    <li>Samuelson Nordhaus Economics</li>
+    <li>Principles Of Economics <span class="author">— Alfred Marshall</span></li>
+    <li>Applied Economics <span class="author">— Thomas Sowell</span></li>
+    <li>The Undercover Economist</li>
+    <li>Understandable Economics <span class="author">— Howard Yaruss</span></li>
+    <li>The Undercover Economist Strikes Back</li>
+    <li>Freakonomics</li>
+    <li>Cocktail Economics</li>
+    <li>The Most Important Lessons in Economics and Finance</li>
+    <li>The Theory Of Basic Economic Development</li>
+    <li>The Law <span class="author">— Frederic Bastiat</span></li>
+    <li>On the Principles of Political Economy and Taxation <span class="author">— David Ricardo</span></li>
+    <li>The Worldly Philosophers</li>
+    <li>Progress and Poverty</li>
+    <li>The Theory Of Economic Development</li>
+    <li>How Finance Works: The HBR Guide to Thinking Smart about the Numbers</li>
+    <li>The Economist Guide to Decision Making <span class="author">— Helga Drummond</span></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">3</span>
+    <span class="section-title">Investing Fundamentals</span>
+    <span class="section-count">24 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> A Random Walk Down Wall Street <span class="author">— Burton Malkiel</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Four Pillars of Investing <span class="author">— William Bernstein</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Little Book of Common Sense Investing <span class="author">— John Bogle</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Common Sense on Mutual Funds <span class="author">— John Bogle</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Just Keep Buying <span class="author">— Nick Maggiulli</span></li>
+    <li>The Intelligent Asset Allocator <span class="author">— William Bernstein</span></li>
+    <li>The Bogleheads' Guide to Retirement Planning</li>
+    <li>The Bogleheads' Guide to the Three-Fund Portfolio</li>
+    <li>The Investor's Manifesto <span class="author">— William Bernstein</span></li>
+    <li>Wise Investing Made Simple</li>
+    <li>The New Coffeehouse Investor</li>
+    <li>The Only Guide to a Winning Investment Strategy You'll Ever Need</li>
+    <li>The Informed Investor</li>
+    <li>The Compound Effect</li>
+    <li>Unconventional Success <span class="author">— David Swensen</span></li>
+    <li>How to Retire on Dividends</li>
+    <li>How To Plan For The Perfect Retirement</li>
+    <li>The Lifestyle Investor</li>
+    <li>Balance <span class="author">— Andrew Hallam</span></li>
+    <li>The Algebra Of Wealth <span class="author">— Scott Galloway</span></li>
+    <li>Conservative Investors Sleep Well <span class="author">— Philip Fisher</span></li>
+    <li>Why Stocks Go Up (and Down)</li>
+    <li>The Small Business Bible</li>
+    <li>A Non-Random Walk Down Wall Street</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">4</span>
+    <span class="section-title">Free Markets &amp; Political Economy</span>
+    <span class="section-count">8 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Free To Choose <span class="author">— Milton Friedman</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Capitalism And Freedom <span class="author">— Milton Friedman</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Road To Serfdom <span class="author">— F.A. Hayek</span></li>
+    <li>Anatomy of the State <span class="author">— Murray Rothbard</span></li>
+    <li>Power and Market <span class="author">— Murray Rothbard</span></li>
+    <li>Capital: A Critique of Political Economy <span class="author">— Karl Marx</span></li>
+    <li>Das Kapital <span class="author">— Karl Marx</span></li>
+    <li>Communist Manifesto <span class="author">— Marx &amp; Engels</span></li>
+  </ul>
+</div>
+
+<!-- ============================================ -->
+<div class="tier-header t2">Tier 2 — Core Knowledge</div>
+<p class="tier-desc">Understand how money is created, why markets crash, and why humans are terrible with money.</p>
+<!-- ============================================ -->
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">5</span>
+    <span class="section-title">Monetary Policy &amp; Central Banking</span>
+    <span class="section-count">34 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> The Price of Time: The Real Story of Interest <span class="author">— Edward Chancellor</span></li>
+    <li class="starred"><span class="star">&#9733;</span> A History of Interest Rates <span class="author">— Sidney Homer &amp; Richard Sylla</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Creature From Jekyll Island <span class="author">— G. Edward Griffin</span></li>
+    <li class="starred"><span class="star">&#9733;</span> When Money Dies <span class="author">— Adam Fergusson</span></li>
+    <li class="starred"><span class="star">&#9733;</span> A Monetary History of the United States, 1867-1960 <span class="author">— Friedman &amp; Schwartz</span></li>
+    <li>A History of Money and Banking in the United States</li>
+    <li>Money and Banking <span class="author">— Frederic Mishkin</span></li>
+    <li>The Mystery of Banking <span class="author">— Murray Rothbard</span></li>
+    <li>Where Does Money Come From?</li>
+    <li>Money Markets <span class="author">— Marcia Stigum</span></li>
+    <li>The New Lombard Street</li>
+    <li>The Theory Of Money And Credit <span class="author">— Ludwig von Mises</span></li>
+    <li>The General Theory of Employment, Interest and Money <span class="author">— John Maynard Keynes</span></li>
+    <li>Milton Friedman Money Mischief</li>
+    <li>Modern Monetary Theory and Practice</li>
+    <li>Monetary Theory And Policy <span class="author">— Walsh</span></li>
+    <li>King Dollar</li>
+    <li>A Primer on Money, Banking, and Gold</li>
+    <li>End the Fed <span class="author">— Ron Paul</span></li>
+    <li>The Case for Gold</li>
+    <li>The Economics of Inflation</li>
+    <li>Central Banking 101</li>
+    <li>Can't We Just Print More Money?</li>
+    <li>The Economics of Money, Banking and Financial Markets</li>
+    <li>21st Century Monetary Policy</li>
+    <li>Strategies for Monetary Policy</li>
+    <li>The Deficit Myth</li>
+    <li>Modern Money Theory</li>
+    <li>The Fiat Standard <span class="author">— Saifedean Ammous</span></li>
+    <li>Layered Money <span class="author">— Nik Bhatia</span></li>
+    <li>The Future of Money <span class="author">— Eswar Prasad</span></li>
+    <li>The Money Trap <span class="author">— Eswar Prasad</span></li>
+    <li>Fed Up <span class="author">— Danielle DiMartino Booth</span></li>
+    <li>Seven Deadly Innocent Frauds</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">6</span>
+    <span class="section-title">Economic History &amp; Financial Crises</span>
+    <span class="section-count">30 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Manias, Panics, and Crashes <span class="author">— Charles Kindleberger</span></li>
+    <li class="starred"><span class="star">&#9733;</span> This Time Is Different: Eight Centuries of Financial Folly <span class="author">— Reinhart &amp; Rogoff</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Lessons of History <span class="author">— Will &amp; Ariel Durant</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Extraordinary Popular Delusions And The Madness Of Crowds <span class="author">— Charles Mackay</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Debt: The First 5,000 Years <span class="author">— David Graeber</span></li>
+    <li>Fiat Money Inflation in France</li>
+    <li>A History Of The United States In Five Crashes</li>
+    <li>A Brief History of Panics <span class="author">— Clement Juglar</span></li>
+    <li>The Credit Crisis Of 2008</li>
+    <li>Boom Bust: House Prices, Banking and the Depression of 2010</li>
+    <li>Devil Take the Hindmost: A History of Financial Speculation</li>
+    <li>Bubble in the Sun</li>
+    <li>America's Great Depression <span class="author">— Murray Rothbard</span></li>
+    <li>Hall Of Mirrors</li>
+    <li>The Rise and Fall of American Growth</li>
+    <li>The Rise and Fall of Nations</li>
+    <li>Stress Test</li>
+    <li>The Big Short <span class="author">— Michael Lewis</span></li>
+    <li>When Genius Failed <span class="author">— Roger Lowenstein</span></li>
+    <li>Too Big to Fail <span class="author">— Andrew Ross Sorkin</span></li>
+    <li>All the Devils are Here</li>
+    <li>End This Depression Now!</li>
+    <li>The Price Of Peace</li>
+    <li>The Economic Consequences of the Peace <span class="author">— John Maynard Keynes</span></li>
+    <li>When Washington Shut Down Wall Street</li>
+    <li>Austerity: When It Works and When It Doesn't</li>
+    <li>The Money Bubble</li>
+    <li>Crash Proof <span class="author">— Peter Schiff</span></li>
+    <li>Crash Proof 2.0 <span class="author">— Peter Schiff</span></li>
+    <li>The Real Crash <span class="author">— Peter Schiff</span></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">7</span>
+    <span class="section-title">Behavioral Finance &amp; Psychology</span>
+    <span class="section-count">28 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Thinking, Fast and Slow <span class="author">— Daniel Kahneman</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Psychology of Money <span class="author">— Morgan Housel</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Fooled By Randomness <span class="author">— Nassim Taleb</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Black Swan <span class="author">— Nassim Taleb</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Antifragile <span class="author">— Nassim Taleb</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Misbehaving <span class="author">— Richard Thaler</span></li>
+    <li>Skin In The Game <span class="author">— Nassim Taleb</span></li>
+    <li>Behavioral Finance <span class="author">— Hersh Shefrin</span></li>
+    <li>Animal Spirits <span class="author">— Akerlof &amp; Shiller</span></li>
+    <li>Irrational Exuberance <span class="author">— Robert Shiller</span></li>
+    <li>The Misbehavior of Markets <span class="author">— Benoit Mandelbrot</span></li>
+    <li>The Behavioral Investor</li>
+    <li>Your Money and Your Brain</li>
+    <li>Why Smart People Make Big Money Mistakes</li>
+    <li>Noise <span class="author">— Kahneman, Sibony &amp; Sunstein</span></li>
+    <li>Thinking in Bets <span class="author">— Annie Duke</span></li>
+    <li>Same as Ever <span class="author">— Morgan Housel</span></li>
+    <li>A Psicologia Financeira <span class="author">— Morgan Housel</span></li>
+    <li>Blink <span class="author">— Malcolm Gladwell</span></li>
+    <li>The Power of Habit <span class="author">— Charles Duhigg</span></li>
+    <li>The Winner's Curse</li>
+    <li>Poor Charlie's Almanack <span class="author">— Charlie Munger</span></li>
+    <li>The Wisdom of Finance <span class="author">— Mihir Desai</span></li>
+    <li>Mind Over Markets <span class="author">— Dalton</span></li>
+    <li>Adaptive Markets <span class="author">— Andrew Lo</span></li>
+    <li>Psychology of Financial Markets</li>
+    <li>The Disciplined Trader <span class="author">— Mark Douglas</span></li>
+    <li>Trading Without Fear</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">8</span>
+    <span class="section-title">Portfolio Management &amp; Asset Allocation</span>
+    <span class="section-count">22 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> The Most Important Thing <span class="author">— Howard Marks</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Pioneering Portfolio Management <span class="author">— David Swensen</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Expected Returns <span class="author">— Antti Ilmanen</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Portfolio Selection: Efficient Diversification of Investments <span class="author">— Harry Markowitz</span></li>
+    <li>All About Asset Allocation</li>
+    <li>Balanced Asset Allocation <span class="author">— Alex Shahidi</span></li>
+    <li>Asset Rotation: The Demise of Modern Portfolio Theory</li>
+    <li>Understanding Asset Allocation <span class="author">— Victor Canto</span></li>
+    <li>Strategic Risk Management: Designing Portfolios and Managing Risk</li>
+    <li>The Allocator's Edge</li>
+    <li>Beyond Diversification</li>
+    <li>Asset Management: A Systematic Approach to Factor Investing <span class="author">— Andrew Ang</span></li>
+    <li>Global Asset Allocation <span class="author">— Meb Faber</span></li>
+    <li>Active Portfolio Management <span class="author">— Grinold &amp; Kahn</span></li>
+    <li>Portfolio Construction and Analytics <span class="author">— Frank Fabozzi</span></li>
+    <li>Dynamic Asset Allocation</li>
+    <li>Capital Allocation <span class="author">— David Giroux</span></li>
+    <li>Quality Investing <span class="author">— Cunningham, Hargreaves &amp; Eide</span></li>
+    <li>Quantitative Momentum</li>
+    <li>The Portable MBA in Investment</li>
+    <li>Capital Ideas</li>
+    <li>Investimentos <span class="author">— Bodie / Kane</span></li>
+  </ul>
+</div>
+
+<!-- ============================================ -->
+<div class="tier-header t3">Tier 3 — Asset Classes</div>
+<p class="tier-desc">Deep dives into each major asset class — stocks, bonds, real estate, commodities, currencies, and derivatives.</p>
+<!-- ============================================ -->
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">9</span>
+    <span class="section-title">Value Investing &amp; Equities</span>
+    <span class="section-count">32 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Security Analysis <span class="author">— Benjamin Graham &amp; David Dodd</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Essays of Warren Buffett <span class="author">— Buffett &amp; Cunningham</span></li>
+    <li class="starred"><span class="star">&#9733;</span> One Up on Wall Street <span class="author">— Peter Lynch</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Common Stocks and Uncommon Profits <span class="author">— Philip Fisher</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Margin of Safety <span class="author">— Seth Klarman</span></li>
+    <li>Value Investing <span class="author">— Bruce Greenwald</span></li>
+    <li>Competition Demystified <span class="author">— Greenwald &amp; Kahn</span></li>
+    <li>The Outsiders <span class="author">— William Thorndike</span></li>
+    <li>Quality Of Earnings</li>
+    <li>How to Make Money in Stocks <span class="author">— William O'Neil</span></li>
+    <li>You Can Be A Stock Market Genius <span class="author">— Joel Greenblatt</span></li>
+    <li>The Little Book That Still Beats the Market <span class="author">— Joel Greenblatt</span></li>
+    <li>Little Book Of Valuation</li>
+    <li>Being Right Or Making Money</li>
+    <li>Stan Weinstein's Secrets For Profiting in Bull and Bear Markets</li>
+    <li>The Warren Buffett Way</li>
+    <li>Expectations Investing <span class="author">— Mauboussin &amp; Rappaport</span></li>
+    <li>More Than You Know <span class="author">— Michael Mauboussin</span></li>
+    <li>Contrarian Investment Strategies</li>
+    <li>The Theory of Investment Value <span class="author">— John Burr Williams</span></li>
+    <li>Investment Valuation <span class="author">— Aswath Damodaran</span></li>
+    <li>Narrative and Numbers <span class="author">— Aswath Damodaran</span></li>
+    <li>Investment Valuation: Tools and Techniques</li>
+    <li>Rational Investing in Irrational Times</li>
+    <li>Capital Returns: Investing through the Capital Cycle</li>
+    <li>The Long Good Buy: Analysing Cycles in Markets</li>
+    <li>Best Practices for Equity Research Analysts</li>
+    <li>Efficiently Inefficient</li>
+    <li>Good Strategy Bad Strategy <span class="author">— Richard Rumelt</span></li>
+    <li>Secrets of Profiting In Bull and Bear Markets</li>
+    <li>Anatomy of the Bear</li>
+    <li>The Little Book of Bull Moves in Bear Markets</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">10</span>
+    <span class="section-title">Fixed Income &amp; Bonds</span>
+    <span class="section-count">21 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> The Handbook of Fixed Income Securities</li>
+    <li class="starred"><span class="star">&#9733;</span> Bond Markets</li>
+    <li class="starred"><span class="star">&#9733;</span> The Bond Book</li>
+    <li>The Strategic Bond Investor</li>
+    <li>Systematic Fixed Income</li>
+    <li>Fixed Income Securities: Tools for Today's Markets</li>
+    <li>Fixed Income Strategy: A Practitioner's Guide to Riding the Curve</li>
+    <li>Trading the Fixed Income, Inflation and Credit Markets</li>
+    <li>Trading Fixed Income and FX in Emerging Markets</li>
+    <li>Fixed Income Markets and Their Derivatives</li>
+    <li>Fixed Income Trading and Risk Management: The Complete Guide</li>
+    <li>Systematic Fixed Income: An Investor's Guide</li>
+    <li>Sofr Futures And Options</li>
+    <li>The Advanced Fixed Income and Derivatives Management Guide</li>
+    <li>Investing in Fixed Income Securities: Understanding the Bond Market</li>
+    <li>Advanced Bond Portfolio Management</li>
+    <li>Interest Rate Markets: A Practical Approach to Fixed Income</li>
+    <li>Fixed Income Relative Value Analysis</li>
+    <li>The Handbook of European Fixed Income Securities</li>
+    <li>Charlie D: The Story of the Legendary Bond Trader</li>
+    <li>The Bond King <span class="author">— Mary Childs</span></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">11</span>
+    <span class="section-title">Real Estate</span>
+    <span class="section-count">5 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> What Every Real Estate Investor Needs to Know About Cash Flow</li>
+    <li>From 0 to 130 Properties in 3.5 Years</li>
+    <li>Timeless Wealth: Real Estate Through the Ages</li>
+    <li>How To Create Life Time Cash Flow (Real Estate)</li>
+    <li>One Hundred Years Of Land Values In Chicago</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">12</span>
+    <span class="section-title">Commodities &amp; Energy</span>
+    <span class="section-count">14 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> The Prize <span class="author">— Daniel Yergin</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The World for Sale <span class="author">— Javier Blas</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Hot Commodities <span class="author">— Jim Rogers</span></li>
+    <li>O Petroleo: Uma Historia Mundial De Conquistas, Poder E Dinheiro</li>
+    <li>The Power of Gold</li>
+    <li>Tomorrow's Gold</li>
+    <li>A Trader's First Book on Commodities</li>
+    <li>Commodities For Dummies</li>
+    <li>Merchants of Grain</li>
+    <li>Material World <span class="author">— Ed Conway</span></li>
+    <li>Volt Rush <span class="author">— Henry Sanderson</span></li>
+    <li>Cobalt Red <span class="author">— Siddharth Kara</span></li>
+    <li>The New Map <span class="author">— Daniel Yergin</span></li>
+    <li>Salt Sugar Fat</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">13</span>
+    <span class="section-title">Forex &amp; Currencies</span>
+    <span class="section-count">11 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Trade Wars Are Class Wars <span class="author">— Matthew Klein</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Making Sense of the Dollar</li>
+    <li>Currency Strategy: The Practitioner's Guide</li>
+    <li>Foreign Exchange: Practical Asset Pricing and Macroeconomic Theory</li>
+    <li>Inside the Currency Market: Mechanics, Valuation and Strategies</li>
+    <li>Foreign Exchange <span class="author">— Adam Iqbal</span></li>
+    <li>Currency Strategy: The Practitioner's Guide to Currency Investing, Hedging and Forecasting</li>
+    <li>Financial Markets and Institutions: A European Perspective</li>
+    <li>The Art of Currency Trading</li>
+    <li>The Fall of the Euro</li>
+    <li>Princes Of The Yen</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">14</span>
+    <span class="section-title">Options &amp; Derivatives</span>
+    <span class="section-count">8 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Option Volatility and Pricing <span class="author">— Sheldon Natenberg</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Options As A Strategic Investment</li>
+    <li>Opções, Futuros, e Outros Derivativos</li>
+    <li>Dynamic Hedging <span class="author">— Nassim Taleb</span></li>
+    <li>Positional Option Trading <span class="author">— Euan Sinclair</span></li>
+    <li>The Volatility Surface <span class="author">— Jim Gatheral</span></li>
+    <li>The Volatility Birman <span class="author">— Christopher Cole</span></li>
+    <li>Trades, Quotes and Prices: Financial Markets Under the Microscope</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">15</span>
+    <span class="section-title">Crypto &amp; Digital Money</span>
+    <span class="section-count">4 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Cryptoassets <span class="author">— Chris Burniske &amp; Jack Tatar</span></li>
+    <li>The Blocksize War <span class="author">— Jonathan Bier</span></li>
+    <li>Broken Money</li>
+    <li>The Lords of Easy Money <span class="author">— Christopher Leonard</span></li>
+  </ul>
+</div>
+
+<!-- ============================================ -->
+<div class="tier-header t4">Tier 4 — Advanced Strategies</div>
+<p class="tier-desc">Active trading, cycles, quant methods, and global macro. For when you want to go deeper.</p>
+<!-- ============================================ -->
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">16</span>
+    <span class="section-title">Trading &amp; Technical Analysis</span>
+    <span class="section-count">42 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Market Wizards <span class="author">— Jack Schwager</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Hedge Fund Market Wizards <span class="author">— Jack Schwager</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Reminiscences of a Stock Operator / Come Into My Trading Room <span class="author">— Alexander Elder</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Trade Your Way To Financial Freedom <span class="author">— Van Tharp</span></li>
+    <li>Unknown Market Wizards <span class="author">— Jack Schwager</span></li>
+    <li>O Novo Magos Do Mercado</li>
+    <li>Trading With Intermarket Analysis <span class="author">— John Murphy</span></li>
+    <li>Technical Analysis of Stock Trends <span class="author">— Magee</span></li>
+    <li>Technical Analysis <span class="author">— Kirkpatrick</span></li>
+    <li>Technical Analysis of the Futures Markets</li>
+    <li>The Master Swing Trader <span class="author">— Farley</span></li>
+    <li>Tools and Tactics For The Master Daytrader <span class="author">— Velez</span></li>
+    <li>Longterm Secrets To Short Term Trading <span class="author">— Larry Williams</span></li>
+    <li>Trade Stocks and Commodities With The Insiders <span class="author">— Larry Williams</span></li>
+    <li>Unlocking Wealth: Secret To Market Timing <span class="author">— John Crane</span></li>
+    <li>The Playbook <span class="author">— Mike Bellafiore</span></li>
+    <li>Secrets of a Pivot Boss</li>
+    <li>Trend Following <span class="author">— Michael Covel</span></li>
+    <li>The Abc Of Stock Speculation <span class="author">— Charles Dow</span></li>
+    <li>Truth of The Stock Tape <span class="author">— Gann</span></li>
+    <li>45 Years Of Wall Street <span class="author">— Gann</span></li>
+    <li>New Stock Trend Detector <span class="author">— Gann</span></li>
+    <li>How To Make Profits Trading In Commodities <span class="author">— Gann</span></li>
+    <li>Michael S. Jenkins Complete Stock Market Trading and Forecasting Course</li>
+    <li>How I Trade And Invest In Stocks <span class="author">— Wyckoff</span></li>
+    <li>Charting The Stock Market: The Wyckoff Method</li>
+    <li>The Wycoff Methodology In Depth <span class="author">— Villahermosa</span></li>
+    <li>Metodologia Wyckoff</li>
+    <li>Dow Theory Unplugged</li>
+    <li>O Principio Da Onda De Elliott</li>
+    <li>RN Elliott - Nature Law</li>
+    <li>Trades About To Happen <span class="author">— Weis</span></li>
+    <li>The Art of Short Selling</li>
+    <li>Global Macro Trading</li>
+    <li>Martin Zweig's Winning on Wall Street</li>
+    <li>Faça Fortuna com Ações</li>
+    <li>The Mathematics of Money Management <span class="author">— Ralph Vince</span></li>
+    <li>A Disciplina Busca Por Menos</li>
+    <li>Um Homen Para Qualquer Mercado <span class="author">— Ed Thorp</span></li>
+    <li>The Man Who Solved The Market <span class="author">— Gregory Zuckerman</span></li>
+    <li>The Taylor Trading Technique</li>
+    <li>A Ciencia De Ficar Rico</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">17</span>
+    <span class="section-title">Trading Psychology</span>
+    <span class="section-count">6 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Trading Psychology 2.0 <span class="author">— Brett Steenbarger</span></li>
+    <li>The Daily Trading Coach <span class="author">— Brett Steenbarger</span></li>
+    <li>Forecasting Financial Markets</li>
+    <li>Se Afastando Da Manada <span class="author">— Andre Moraes</span></li>
+    <li>Comprar Ou Vender? <span class="author">— Matsura</span></li>
+    <li>Rapido e Devagar <span class="author">— Daniel Kahneman</span></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">18</span>
+    <span class="section-title">Cycles &amp; Market Timing</span>
+    <span class="section-count">14 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Secular Cycles <span class="author">— Peter Turchin</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Fourth Turning <span class="author">— Strauss &amp; Howe</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Generations <span class="author">— Strauss &amp; Howe</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Capital Wars: The Rise of Global Liquidity</li>
+    <li>Walter Bressert Cycles</li>
+    <li>Measuring Business Cycles</li>
+    <li>A Theory of Economic History</li>
+    <li>The Great Wave: Price Revolutions</li>
+    <li>The Long Wave Cycle</li>
+    <li>War and Peace and War <span class="author">— Peter Turchin</span></li>
+    <li>Mastering Hurst Cycle Analysis <span class="author">— Grafton</span></li>
+    <li>Cycles: The Mysterious Forces that Trigger Events</li>
+    <li>Business Cycles <span class="author">— Schumpeter</span></li>
+    <li>Business Cycles: A Theoretical, Historical, and Statistical Analysis</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">19</span>
+    <span class="section-title">Quantitative &amp; Algorithmic Trading</span>
+    <span class="section-count">17 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> The Quants <span class="author">— Scott Patterson</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Flash Boys <span class="author">— Michael Lewis</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Fortune's Formula <span class="author">— William Poundstone</span></li>
+    <li>Algorithmic Trading <span class="author">— Ernest Chan</span></li>
+    <li>Quantitative Trading <span class="author">— Ernest Chan</span></li>
+    <li>Inside the Black Box <span class="author">— Rishi Narang</span></li>
+    <li>Machine Learning for Asset Managers <span class="author">— Marcos Lopez de Prado</span></li>
+    <li>Advances in Financial Machine Learning <span class="author">— Marcos Lopez de Prado</span></li>
+    <li>Financial Signal Processing and Machine Learning</li>
+    <li>An Introduction to Statistical Learning <span class="author">— Gareth James et al.</span></li>
+    <li>The Art of Statistics <span class="author">— David Spiegelhalter</span></li>
+    <li>Statistical Rethinking <span class="author">— Richard McElreath</span></li>
+    <li>Superforecasting <span class="author">— Tetlock &amp; Gardner</span></li>
+    <li>Dark Pools <span class="author">— Scott Patterson</span></li>
+    <li>Market Microstructure Theory</li>
+    <li>The Hour Between Dog and Wolf <span class="author">— John Coates</span></li>
+    <li>Generative AI for Trading <span class="author">— James Preston</span></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">20</span>
+    <span class="section-title">Risk Management &amp; Position Sizing</span>
+    <span class="section-count">8 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Super Trader <span class="author">— Van Tharp</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Definitive Guide To Position Sizing Strategies <span class="author">— Van Tharp</span></li>
+    <li>Value at Risk <span class="author">— Philippe Jorion</span></li>
+    <li>Financial Risk Manager Handbook <span class="author">— Philippe Jorion</span></li>
+    <li>Risk Management and Financial Institutions <span class="author">— John Hull</span></li>
+    <li>Distressed Debt Analysis</li>
+    <li>Way of the Turtle</li>
+    <li>The Success Equation</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">21</span>
+    <span class="section-title">Macro Investing &amp; Geopolitics</span>
+    <span class="section-count">34 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> The Changing World Order <span class="author">— Ray Dalio</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Principles <span class="author">— Ray Dalio</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Rise and Fall of Great Powers <span class="author">— Paul Kennedy</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Why Nations Fail <span class="author">— Acemoglu &amp; Robinson</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Accidental Superpower <span class="author">— Peter Zeihan</span></li>
+    <li>How Countries Go Broke</li>
+    <li>The Fund: Ray Dalio</li>
+    <li>Geopolitical Alpha</li>
+    <li>The Great Rupture</li>
+    <li>Signals: The Breakdown of the Social Contract</li>
+    <li>Confessions Of An Economic Hitman</li>
+    <li>The Dictator's Handbook</li>
+    <li>Monetary Regimes and Inflation</li>
+    <li>Economic Facts and Fallacies</li>
+    <li>Lawrence in Arabia</li>
+    <li>The End of the World Is Just the Beginning <span class="author">— Peter Zeihan</span></li>
+    <li>The Myth of Capitalism</li>
+    <li>World Order <span class="author">— Henry Kissinger</span></li>
+    <li>The Sovereign Individual</li>
+    <li>Energy and Civilization <span class="author">— Vaclav Smil</span></li>
+    <li>How the World Really Works <span class="author">— Vaclav Smil</span></li>
+    <li>Prisoners of Geography</li>
+    <li>Global Macro Edge</li>
+    <li>The New Paradigm for Financial Markets <span class="author">— George Soros</span></li>
+    <li>The Volatility Machine</li>
+    <li>Technological Revolutions and Financial Capital <span class="author">— Carlota Perez</span></li>
+    <li>Applied Financial Macroeconomics and Investment Strategy</li>
+    <li>The Levelling <span class="author">— Michael O'Sullivan</span></li>
+    <li>The Hidden Hand <span class="author">— Clive Hamilton</span></li>
+    <li>The Rise of Carry</li>
+    <li>The Money Plot <span class="author">— Frederick Kaufman</span></li>
+    <li>The Origin of Wealth</li>
+    <li>Macroeconomia <span class="author">— Blanchard</span></li>
+    <li>The Mystery Of Capital</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">22</span>
+    <span class="section-title">Economic Indicators</span>
+    <span class="section-count">5 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> The Trader's Guide to Key Economic Indicators</li>
+    <li>Guide to Economic Indicators: Making Sense of Economics</li>
+    <li>Economic Indicators For Dummies</li>
+    <li>The Wall Street Journal Guide to the 50 Economic Indicators That Really Matter</li>
+    <li>The Economic Indicator Handbook</li>
+  </ul>
+</div>
+
+<!-- ============================================ -->
+<div class="tier-header t5">Tier 5 — Wisdom &amp; Perspective</div>
+<p class="tier-desc">Wall Street war stories, big-picture thinking, and the mindset to keep going.</p>
+<!-- ============================================ -->
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">23</span>
+    <span class="section-title">Wall Street Stories &amp; Biographies</span>
+    <span class="section-count">30 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Liar's Poker <span class="author">— Michael Lewis</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Barbarians at the Gate <span class="author">— Burrough &amp; Helyar</span></li>
+    <li class="starred"><span class="star">&#9733;</span> More Money Than God <span class="author">— Sebastian Mallaby</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Ascent of Money <span class="author">— Niall Ferguson</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Lords Of Finance <span class="author">— Liaquat Ahamed</span></li>
+    <li>The Predators' Ball <span class="author">— Connie Bruck</span></li>
+    <li>House of Cards <span class="author">— William Cohan</span></li>
+    <li>King of Capital <span class="author">— Carey &amp; Morris</span></li>
+    <li>The Buy Side <span class="author">— Turney Duff</span></li>
+    <li>Dead Company Walking</li>
+    <li>Hedgehogging</li>
+    <li>The Man Who Made Wall Street</li>
+    <li>Fooling Some of the People All of the Time</li>
+    <li>The Next Perfect Trade</li>
+    <li>Inside the House of Money</li>
+    <li>Traders Guns &amp; Money</li>
+    <li>The Rise of Cary</li>
+    <li>The House of Rothschild</li>
+    <li>Financial Shenanigans</li>
+    <li>Trillions <span class="author">— Robin Wigglesworth</span></li>
+    <li>The Intelligent Fund Investor <span class="author">— Joe Wiggins</span></li>
+    <li>The Man from the Future <span class="author">— Ananyo Bhattacharya</span></li>
+    <li>Paper Promises <span class="author">— Philip Coggan</span></li>
+    <li>The Physics of Wall Street <span class="author">— James Owen Weatherall</span></li>
+    <li>Economist on Wall Street</li>
+    <li>The Biggest Con: How the Government is...</li>
+    <li>The Economic Organization of A Pow Camp</li>
+    <li>Clear Thinking <span class="author">— Shane Parrish</span></li>
+    <li>The Informed Investor</li>
+    <li>Dark Money</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">24</span>
+    <span class="section-title">Corporate Finance &amp; Investment Banking</span>
+    <span class="section-count">12 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Corporate Finance <span class="author">— Berk &amp; DeMarzo</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Investment Banking <span class="author">— Rosenbaum &amp; Pearl</span></li>
+    <li>Applied Corporate Finance <span class="author">— Aswath Damodaran</span></li>
+    <li>The Principles of Banking</li>
+    <li>Mergers and Acquisitions from A to Z <span class="author">— Andrew Sherman</span></li>
+    <li>Private Equity at Work <span class="author">— Kaplan &amp; Stromberg</span></li>
+    <li>Kaplan Schweser CFA Level 1</li>
+    <li>The Frontier Market Guide</li>
+    <li>Frontier Market Equity Investing</li>
+    <li>Social Security 101</li>
+    <li>The Guide To Frontier Markets</li>
+    <li>Distressed Debt Analysis</li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">25</span>
+    <span class="section-title">Geopolitics, Sociology &amp; Power</span>
+    <span class="section-count">23 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Guns, Germs, and Steel <span class="author">— Jared Diamond</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Sapiens <span class="author">— Yuval Noah Harari</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Bowling Alone <span class="author">— Robert Putnam</span></li>
+    <li class="starred"><span class="star">&#9733;</span> The Great Leveler <span class="author">— Walter Scheidel</span></li>
+    <li>Old Money: The Mythology of Wealth in America</li>
+    <li>Power: Why Some People Have It and Others Don't</li>
+    <li>Notes on the Death of Culture</li>
+    <li>The Five Experiments <span class="author">— Fernando del Pino</span></li>
+    <li>The Origin of Species <span class="author">— Charles Darwin</span></li>
+    <li>Outliers <span class="author">— Malcolm Gladwell</span></li>
+    <li>The 48 Laws of Power <span class="author">— Robert Greene</span></li>
+    <li>The 33 Strategies of War <span class="author">— Robert Greene</span></li>
+    <li>Seven Powers <span class="author">— Hamilton Helmer</span></li>
+    <li>The Power Law <span class="author">— Sebastian Mallaby</span></li>
+    <li>Game Theory: The Theory Of Games And Economic Behavior</li>
+    <li>Thinking Strategically</li>
+    <li>The Art of Strategy <span class="author">— Avinash Dixit</span></li>
+    <li>The Law of Success</li>
+    <li>Good Strategy Bad Strategy <span class="author">— Richard Rumelt</span></li>
+    <li>Naked Economics</li>
+    <li>The Sovereign Individual</li>
+    <li>The War of Art <span class="author">— Steven Pressfield</span></li>
+    <li>Communist Manifesto <span class="author">— Marx &amp; Engels</span></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">26</span>
+    <span class="section-title">Self-Development &amp; Mindset</span>
+    <span class="section-count">26 books</span>
+  </div>
+  <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Grit <span class="author">— Angela Duckworth</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Influence: The Psychology of Persuasion <span class="author">— Robert Cialdini</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Think and Grow Rich <span class="author">— Napoleon Hill</span></li>
+    <li class="starred"><span class="star">&#9733;</span> Meditations <span class="author">— Marcus Aurelius</span></li>
+    <li>How to Win Friends and Influence People <span class="author">— Dale Carnegie</span></li>
+    <li>The 7 Habits of Highly Effective People <span class="author">— Stephen Covey</span></li>
+    <li>The Power of Now <span class="author">— Eckhart Tolle</span></li>
+    <li>The Four Agreements <span class="author">— Don Miguel Ruiz</span></li>
+    <li>The 4-Hour Workweek <span class="author">— Tim Ferriss</span></li>
+    <li>Zero to One <span class="author">— Peter Thiel</span></li>
+    <li>Letters from a Stoic <span class="author">— Seneca</span></li>
+    <li>Getting Along: How to Work with Anyone</li>
+    <li>The Charisma Myth</li>
+    <li>177 Mental Toughness Secrets of the World Class</li>
+    <li>The Compound Effect</li>
+    <li>The Science of Getting Rich</li>
+    <li>Secrets Of The Millionaire Mind</li>
+    <li>Atomic Habits <span class="author">— James Clear</span></li>
+    <li>The Power of Habit <span class="author">— Charles Duhigg</span></li>
+    <li>The Success Equation</li>
+    <li>Rich Dad Poor Dad <span class="author">— Robert Kiyosaki</span></li>
+    <li>The Millionaire Fastlane <span class="author">— MJ DeMarco</span></li>
+    <li>Principles <span class="author">— Ray Dalio</span></li>
+    <li>The Small Business Bible</li>
+    <li>Free To Choose <span class="author">— Milton Friedman</span></li>
+    <li>Capitalism And Freedom <span class="author">— Milton Friedman</span></li>
+  </ul>
+</div>
+
+<div class="section">
+  <div class="section-header">
+    <span class="section-num">27</span>
+    <span class="section-title">Remaining &amp; Uncategorized</span>
+    <span class="section-count">15 books</span>
+  </div>
+  <ul class="book-list">
+    <li>Macroeconomia <span class="author">— Blanchard</span></li>
+    <li>Opções, Futuros, e Outros Derivativos</li>
+    <li>Applied Financial Macroeconomics and Investment Strategy</li>
+    <li>A Random Walk Down Wallstreet <span class="note">(duplicate)</span></li>
+    <li>The Most Important Lessons in Economics and Finance</li>
+    <li>Investimentos <span class="author">— Bodie / Kane</span></li>
+    <li>Market Microstructure Theory</li>
+    <li>The Biggest Con: How the Government is</li>
+    <li>The Economic Organization of A Pow Camp</li>
+    <li>Broken Money</li>
+    <li>The New Paradigm for Financial Markets</li>
+    <li>Capital Ideas</li>
+    <li>The Mystery Of Capital</li>
+    <li>Frontier Market Equity Investing</li>
+    <li>How Countries Go Broke</li>
+  </ul>
+</div>
+
+<div class="footer">
+  <p>Master Investment Reading List &mdash; Last updated March 2026</p>
+  <p>&#9733; = Must-read pick &nbsp;&bull;&nbsp; 500+ books across 27 categories</p>
+</div>
+
+</div><!-- /container -->
+</body>
+</html>
