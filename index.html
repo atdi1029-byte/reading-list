@@ -3,6 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#8b6914">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Master Investment Reading List</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
@@ -204,6 +208,124 @@
     font-style: italic;
   }
 
+  .book-list li { cursor: pointer; transition: opacity 0.2s; user-select: none; }
+  .book-list li:hover { background: rgba(0,0,0,0.03); border-radius: 4px; }
+  .book-list li.read { opacity: 0.5; }
+  .book-list li.read::after { content: ' \2713'; color: #3a9e4a; font-weight: 700; font-size: 13px; }
+  .book-list li.hide-read { display: none; }
+
+  .filters {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 20px;
+  }
+
+  .filter-btn {
+    background: rgba(0,0,0,0.05);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 6px 18px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+
+  .filter-btn:hover { background: rgba(0,0,0,0.08); }
+  .filter-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .search-wrap {
+    max-width: 400px;
+    margin: 20px auto 0;
+    position: relative;
+  }
+
+  .search-wrap input {
+    width: 100%;
+    padding: 10px 16px 10px 38px;
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    background: rgba(255,255,255,0.8);
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-wrap input:focus { border-color: var(--accent); }
+
+  .search-wrap::before {
+    content: '\1F50D';
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 14px;
+    opacity: 0.4;
+  }
+
+  .search-wrap .clear-search {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: var(--muted);
+    display: none;
+    padding: 4px 8px;
+  }
+
+  .progress-bar {
+    height: 3px;
+    background: #eee;
+    border-radius: 2px;
+    overflow: hidden;
+    margin-top: 8px;
+    width: 100%;
+  }
+
+  .progress-bar .fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+
+  .section-progress {
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+
+  .section-header-wrap {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .section-header-top {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .no-results {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+    font-size: 16px;
+    display: none;
+  }
+
   .footer {
     text-align: center;
     padding: 40px;
@@ -235,7 +357,7 @@
   <p class="subtitle">A structured learning path from personal finance to macro investing</p>
   <div class="stats">
     <div class="stat">
-      <div class="stat-num">500+</div>
+      <div class="stat-num" id="total-count">0</div>
       <div class="stat-label">Books</div>
     </div>
     <div class="stat">
@@ -246,14 +368,30 @@
       <div class="stat-num">5</div>
       <div class="stat-label">Tiers</div>
     </div>
+    <div class="stat">
+      <div class="stat-num" id="read-count">0</div>
+      <div class="stat-label">Read</div>
+    </div>
+  </div>
+  <div class="filters">
+    <button class="filter-btn active" id="filterAll" onclick="setFilter('all')">All</button>
+    <button class="filter-btn" id="filterUnread" onclick="setFilter('unread')">Unread</button>
+    <button class="filter-btn" id="filterRead" onclick="setFilter('read')">Read</button>
+    <button class="filter-btn" id="filterStarred" onclick="setFilter('starred')">Must-Read</button>
+  </div>
+  <div class="search-wrap">
+    <input type="text" id="searchInput" placeholder="Search 500+ books..." autocomplete="off">
+    <button class="clear-search" id="clearSearch" onclick="clearSearch()">&times;</button>
   </div>
 </div>
 
 <div class="container">
 
 <div class="legend">
-  <span class="star-icon">&#9733;</span> = <strong>Must-read</strong> — If you only read a handful per category, read the starred ones first. Every book from the original list is included; stars mark the essentials.
+  <span class="star-icon">&#9733;</span> = <strong>Must-read</strong> — If you only read a handful per category, read the starred ones first. Click any book to mark as read.
 </div>
+
+<div class="no-results" id="noResults">No books match your search.</div>
 
 <!-- ============================================ -->
 <div class="tier-header t1">Tier 1 — Foundations</div>
@@ -264,7 +402,7 @@
   <div class="section-header">
     <span class="section-num">1</span>
     <span class="section-title">Personal Finance Basics</span>
-    <span class="section-count">27 books</span>
+    <span class="section-count">28 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> I Will Teach You To Be Rich <span class="author">— Ramit Sethi</span></li>
@@ -280,6 +418,7 @@
     <li>You Need a Budget</li>
     <li>The Millionaire Fastlane <span class="author">— MJ DeMarco</span></li>
     <li>Rich Dad Poor Dad <span class="author">— Robert Kiyosaki</span></li>
+    <li>The Richest Man in Babylon <span class="author">— George S. Clason</span></li>
     <li>Rich Dad's Cashflow Quadrant <span class="author">— Robert Kiyosaki</span></li>
     <li>The Science of Getting Rich</li>
     <li>Secrets of the Millionaire Mind</li>
@@ -375,12 +514,14 @@
   <div class="section-header">
     <span class="section-num">4</span>
     <span class="section-title">Free Markets &amp; Political Economy</span>
-    <span class="section-count">8 books</span>
+    <span class="section-count">10 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> Free To Choose <span class="author">— Milton Friedman</span></li>
     <li class="starred"><span class="star">&#9733;</span> Capitalism And Freedom <span class="author">— Milton Friedman</span></li>
     <li class="starred"><span class="star">&#9733;</span> The Road To Serfdom <span class="author">— F.A. Hayek</span></li>
+    <li>The Politically Incorrect Guide to Economics <span class="author">— Thomas DiLorenzo</span></li>
+    <li>The Politically Incorrect Guide to Capitalism <span class="author">— Robert Murphy</span></li>
     <li>Anatomy of the State <span class="author">— Murray Rothbard</span></li>
     <li>Power and Market <span class="author">— Murray Rothbard</span></li>
     <li>Capital: A Critique of Political Economy <span class="author">— Karl Marx</span></li>
@@ -398,7 +539,7 @@
   <div class="section-header">
     <span class="section-num">5</span>
     <span class="section-title">Monetary Policy &amp; Central Banking</span>
-    <span class="section-count">34 books</span>
+    <span class="section-count">35 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> The Price of Time: The Real Story of Interest <span class="author">— Edward Chancellor</span></li>
@@ -406,6 +547,7 @@
     <li class="starred"><span class="star">&#9733;</span> The Creature From Jekyll Island <span class="author">— G. Edward Griffin</span></li>
     <li class="starred"><span class="star">&#9733;</span> When Money Dies <span class="author">— Adam Fergusson</span></li>
     <li class="starred"><span class="star">&#9733;</span> A Monetary History of the United States, 1867-1960 <span class="author">— Friedman &amp; Schwartz</span></li>
+    <li>What Has Government Done to Our Money <span class="author">— Murray Rothbard</span></li>
     <li>A History of Money and Banking in the United States</li>
     <li>Money and Banking <span class="author">— Frederic Mishkin</span></li>
     <li>The Mystery of Banking <span class="author">— Murray Rothbard</span></li>
@@ -630,11 +772,12 @@
   <div class="section-header">
     <span class="section-num">11</span>
     <span class="section-title">Real Estate</span>
-    <span class="section-count">5 books</span>
+    <span class="section-count">6 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> What Every Real Estate Investor Needs to Know About Cash Flow</li>
     <li>From 0 to 130 Properties in 3.5 Years</li>
+    <li>The Turnkey Revolution <span class="author">— Chris Clothier</span></li>
     <li>Timeless Wealth: Real Estate Through the Ages</li>
     <li>How To Create Life Time Cash Flow (Real Estate)</li>
     <li>One Hundred Years Of Land Values In Chicago</li>
@@ -846,9 +989,10 @@
   <div class="section-header">
     <span class="section-num">20</span>
     <span class="section-title">Risk Management &amp; Position Sizing</span>
-    <span class="section-count">8 books</span>
+    <span class="section-count">9 books</span>
   </div>
   <ul class="book-list">
+    <li class="starred"><span class="star">&#9733;</span> Safe Haven <span class="author">— Mark Spitznagel</span></li>
     <li class="starred"><span class="star">&#9733;</span> Super Trader <span class="author">— Van Tharp</span></li>
     <li class="starred"><span class="star">&#9733;</span> Definitive Guide To Position Sizing Strategies <span class="author">— Van Tharp</span></li>
     <li>Value at Risk <span class="author">— Philippe Jorion</span></li>
@@ -864,7 +1008,7 @@
   <div class="section-header">
     <span class="section-num">21</span>
     <span class="section-title">Macro Investing &amp; Geopolitics</span>
-    <span class="section-count">34 books</span>
+    <span class="section-count">36 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> The Changing World Order <span class="author">— Ray Dalio</span></li>
@@ -899,6 +1043,8 @@
     <li>The Rise of Carry</li>
     <li>The Money Plot <span class="author">— Frederick Kaufman</span></li>
     <li>The Origin of Wealth</li>
+    <li>The Rational Optimist <span class="author">— Matt Ridley</span></li>
+    <li>The Price of Tomorrow <span class="author">— Jeff Booth</span></li>
     <li>Macroeconomia <span class="author">— Blanchard</span></li>
     <li>The Mystery Of Capital</li>
   </ul>
@@ -990,7 +1136,7 @@
   <div class="section-header">
     <span class="section-num">25</span>
     <span class="section-title">Geopolitics, Sociology &amp; Power</span>
-    <span class="section-count">23 books</span>
+    <span class="section-count">24 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> Guns, Germs, and Steel <span class="author">— Jared Diamond</span></li>
@@ -1015,6 +1161,7 @@
     <li>Naked Economics</li>
     <li>The Sovereign Individual</li>
     <li>The War of Art <span class="author">— Steven Pressfield</span></li>
+    <li>Three Felonies A Day <span class="author">— Harvey Silverglate</span></li>
     <li>Communist Manifesto <span class="author">— Marx &amp; Engels</span></li>
   </ul>
 </div>
@@ -1082,9 +1229,150 @@
 
 <div class="footer">
   <p>Master Investment Reading List &mdash; Last updated March 2026</p>
-  <p>&#9733; = Must-read pick &nbsp;&bull;&nbsp; 500+ books across 27 categories</p>
+  <p>&#9733; = Must-read pick &nbsp;&bull;&nbsp; Click any book to mark as read</p>
 </div>
 
 </div><!-- /container -->
+<script>
+(function() {
+  var KEY = 'readinglist_read';
+  var currentFilter = 'all';
+  var searchTerm = '';
+
+  function getRead() {
+    try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; }
+  }
+  function saveRead(r) { localStorage.setItem(KEY, JSON.stringify(r)); }
+
+  function bookKey(li) {
+    var clone = li.cloneNode(true);
+    clone.querySelectorAll('.author, .note, .star').forEach(function(el) { el.remove(); });
+    return clone.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
+  }
+
+  function bookText(li) {
+    return li.textContent.toLowerCase();
+  }
+
+  // Add progress bars to each section header
+  document.querySelectorAll('.section-header').forEach(function(hdr) {
+    var wrap = document.createElement('div');
+    wrap.className = 'section-header-wrap';
+    var top = document.createElement('div');
+    top.className = 'section-header-top';
+    while (hdr.firstChild) top.appendChild(hdr.firstChild);
+    var prog = document.createElement('span');
+    prog.className = 'section-progress';
+    top.appendChild(prog);
+    wrap.appendChild(top);
+    var bar = document.createElement('div');
+    bar.className = 'progress-bar';
+    bar.innerHTML = '<div class="fill" style="width:0%"></div>';
+    wrap.appendChild(bar);
+    hdr.appendChild(wrap);
+  });
+
+  function render() {
+    var read = getRead();
+    var totalCount = 0;
+    var readCount = 0;
+    var anyVisible = false;
+
+    document.querySelectorAll('.section').forEach(function(sec) {
+      var items = sec.querySelectorAll('.book-list li');
+      var secTotal = items.length;
+      var secRead = 0;
+      var hasVisible = false;
+
+      items.forEach(function(li) {
+        var key = bookKey(li);
+        li.dataset.bookKey = key;
+        var isRead = !!read[key];
+        var isStarred = li.classList.contains('starred');
+        if (isRead) { li.classList.add('read'); secRead++; readCount++; }
+        else { li.classList.remove('read'); }
+
+        // Combine filter + search
+        var matchesFilter = currentFilter === 'all' ||
+          (currentFilter === 'unread' && !isRead) ||
+          (currentFilter === 'read' && isRead) ||
+          (currentFilter === 'starred' && isStarred);
+        var matchesSearch = !searchTerm || bookText(li).indexOf(searchTerm) !== -1;
+        var show = matchesFilter && matchesSearch;
+        li.style.display = show ? '' : 'none';
+        if (show) { hasVisible = true; anyVisible = true; }
+        totalCount++;
+      });
+
+      sec.style.display = hasVisible ? '' : 'none';
+
+      // Update progress bar
+      var prog = sec.querySelector('.section-progress');
+      var fill = sec.querySelector('.progress-bar .fill');
+      if (prog) prog.textContent = secRead + '/' + secTotal;
+      if (fill) fill.style.width = secTotal ? (secRead / secTotal * 100) + '%' : '0%';
+    });
+
+    // Reset totalCount — only count once
+    var allItems = document.querySelectorAll('.book-list li');
+    var tc = document.getElementById('total-count');
+    if (tc) tc.textContent = allItems.length;
+    var rc = document.getElementById('read-count');
+    if (rc) rc.textContent = readCount;
+    // Update search placeholder with real count
+    var si = document.getElementById('searchInput');
+    if (si && !si.dataset.set) { si.placeholder = 'Search ' + allItems.length + ' books...'; si.dataset.set = '1'; }
+    // No results
+    var nr = document.getElementById('noResults');
+    if (nr) nr.style.display = (searchTerm && !anyVisible) ? 'block' : 'none';
+  }
+
+  // Pre-seed books marked as read
+  if (!localStorage.getItem('readinglist_seeded')) {
+    var read = getRead();
+    ['economics-in-one-lesson-the-6-lessons', 'central-banking-101', 'the-richest-man-in-babylon', 'reminiscences-of-a-stock-operator-come-into-my-trading-room', 'the-law'].forEach(function(k) { read[k] = true; });
+    saveRead(read);
+    localStorage.setItem('readinglist_seeded', '1');
+  }
+
+  // Click to toggle read
+  document.addEventListener('click', function(e) {
+    var li = e.target.closest('.book-list li');
+    if (!li) return;
+    var key = li.dataset.bookKey || bookKey(li);
+    var read = getRead();
+    if (read[key]) { delete read[key]; } else { read[key] = true; }
+    saveRead(read);
+    render();
+  });
+
+  // Filter buttons
+  window.setFilter = function(mode) {
+    currentFilter = mode;
+    document.querySelectorAll('.filter-btn').forEach(function(btn) { btn.classList.remove('active'); });
+    document.getElementById('filter' + mode.charAt(0).toUpperCase() + mode.slice(1)).classList.add('active');
+    render();
+  };
+
+  // Search
+  var searchInput = document.getElementById('searchInput');
+  var clearBtn = document.getElementById('clearSearch');
+  searchInput.addEventListener('input', function() {
+    searchTerm = this.value.trim().toLowerCase();
+    clearBtn.style.display = searchTerm ? 'block' : 'none';
+    render();
+  });
+
+  window.clearSearch = function() {
+    searchInput.value = '';
+    searchTerm = '';
+    clearBtn.style.display = 'none';
+    render();
+  };
+
+  render();
+})();
+</script>
+<script>if('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');</script>
 </body>
 </html>
