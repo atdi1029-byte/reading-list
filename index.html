@@ -1226,6 +1226,8 @@
 <script>
 (function() {
   var KEY = 'readinglist_read';
+  var SYNC_URL = 'https://script.google.com/macros/s/AKfycbwt438APIycBc534W6T66O3IgtxLUU9cczw-PZAN6Mc9p2xfU2ySsND_wEMJDHUvrXyUg/exec';
+  var syncReady = false;
   var currentFilter = 'all';
   var searchTerm = '';
 
@@ -1233,6 +1235,31 @@
     try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e) { return {}; }
   }
   function saveRead(r) { localStorage.setItem(KEY, JSON.stringify(r)); }
+
+  async function fireGet(url) {
+    try { var r = await fetch(url); return await r.json(); } catch(e) { return { status: 'error' }; }
+  }
+
+  async function syncFromCloud() {
+    try {
+      var data = await fireGet(SYNC_URL + '?action=get_masterlist');
+      if (data.status === 'ok' && data.masterlist_read) {
+        var remote = data.masterlist_read;
+        // Merge: remote is source of truth, but also keep any local-only keys
+        var local = getRead();
+        var merged = Object.assign({}, local, remote);
+        saveRead(merged);
+        // Push merged back if local had keys remote didn't
+        if (Object.keys(merged).length > Object.keys(remote).length) {
+          Object.keys(merged).forEach(function(k) {
+            if (!remote[k]) fireGet(SYNC_URL + '?action=toggle_masterlist&book=' + encodeURIComponent(k) + '&read=true');
+          });
+        }
+      }
+      syncReady = true;
+      render();
+    } catch(e) { syncReady = true; }
+  }
 
   function bookKey(li) {
     var clone = li.cloneNode(true);
@@ -1296,7 +1323,9 @@
 
       sec.style.display = hasVisible ? '' : 'none';
 
-      // Update progress bar
+      // Update section count badge + progress bar
+      var countBadge = sec.querySelector('.section-count');
+      if (countBadge) countBadge.textContent = secTotal + ' books';
       var prog = sec.querySelector('.section-progress');
       var fill = sec.querySelector('.progress-bar .fill');
       if (prog) prog.textContent = secRead + '/' + secTotal;
@@ -1317,18 +1346,12 @@
     if (nr) nr.style.display = (searchTerm && !anyVisible) ? 'block' : 'none';
   }
 
-  // Pre-seed books marked as read
-  if (!localStorage.getItem('readinglist_seeded')) {
+  // Pre-seed books marked as read (fixed keys to match bookKey output)
+  if (!localStorage.getItem('readinglist_seeded_v3')) {
     var read = getRead();
-    ['economics-in-one-lesson-the-6-lessons', 'central-banking-101', 'the-richest-man-in-babylon', 'reminiscences-of-a-stock-operator-come-into-my-trading-room', 'the-law', 'trading-in-the-zone', 'the-alchemy-of-finance'].forEach(function(k) { read[k] = true; });
+    ['economics-in-one-lesson', 'the-6-lessons', 'central-banking-101', 'the-richest-man-in-babylon', 'reminiscences-of-a-stock-operator', 'come-into-my-trading-room', 'the-law', 'trading-in-the-zone', 'the-alchemy-of-finance', 'tax-free-wealth'].forEach(function(k) { read[k] = true; });
     saveRead(read);
-    localStorage.setItem('readinglist_seeded', '1');
-  }
-  if (!localStorage.getItem('readinglist_seeded_v2')) {
-    var read2 = getRead();
-    ['tax-free-wealth'].forEach(function(k) { read2[k] = true; });
-    saveRead(read2);
-    localStorage.setItem('readinglist_seeded_v2', '1');
+    localStorage.setItem('readinglist_seeded_v3', '1');
   }
 
   // Click to toggle read — skip if user is selecting text
@@ -1339,9 +1362,14 @@
     if (!li) return;
     var key = li.dataset.bookKey || bookKey(li);
     var read = getRead();
-    if (read[key]) { delete read[key]; } else { read[key] = true; }
+    var nowRead = !read[key];
+    if (nowRead) { read[key] = true; } else { delete read[key]; }
     saveRead(read);
     render();
+    // Sync to cloud
+    if (syncReady) {
+      fireGet(SYNC_URL + '?action=toggle_masterlist&book=' + encodeURIComponent(key) + '&read=' + nowRead);
+    }
   });
 
   // Filter buttons
@@ -1369,6 +1397,14 @@
   };
 
   render();
+
+  // Cloud sync on load
+  syncFromCloud();
+
+  // Re-sync when app comes to foreground
+  document.addEventListener('visibilitychange', function() {
+    if (document.visibilityState === 'visible') syncFromCloud();
+  });
 })();
 </script>
 <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');</script>
