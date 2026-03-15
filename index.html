@@ -1256,17 +1256,8 @@
     try {
       var data = await fireGet(SYNC_URL + '?action=get_masterlist');
       if (data.status === 'ok' && data.masterlist_read) {
-        var remote = data.masterlist_read;
-        // Merge: remote is source of truth, but also keep any local-only keys
-        var local = getRead();
-        var merged = Object.assign({}, local, remote);
-        saveRead(merged);
-        // Push merged back if local had keys remote didn't
-        if (Object.keys(merged).length > Object.keys(remote).length) {
-          Object.keys(merged).forEach(function(k) {
-            if (!remote[k]) fireGet(SYNC_URL + '?action=toggle_masterlist&book=' + encodeURIComponent(k) + '&read=true');
-          });
-        }
+        // Cloud is source of truth — replace local entirely
+        saveRead(data.masterlist_read);
       }
       syncReady = true;
       render();
@@ -1378,9 +1369,14 @@
     if (nowRead) { read[key] = true; } else { delete read[key]; }
     saveRead(read);
     render();
-    // Sync to cloud
+    // Sync to cloud and use response as source of truth
     if (syncReady) {
-      fireGet(SYNC_URL + '?action=toggle_masterlist&book=' + encodeURIComponent(key) + '&read=' + nowRead);
+      fireGet(SYNC_URL + '?action=toggle_masterlist&book=' + encodeURIComponent(key) + '&read=' + nowRead).then(function(data) {
+        if (data.status === 'ok' && data.masterlist_read) {
+          saveRead(data.masterlist_read);
+          render();
+        }
+      });
     }
   });
 
