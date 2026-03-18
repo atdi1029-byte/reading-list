@@ -372,6 +372,10 @@
       <div class="stat-num" id="read-count">0</div>
       <div class="stat-label">Read</div>
     </div>
+    <div class="stat">
+      <div class="stat-num" id="unread-count">0</div>
+      <div class="stat-label">Unread</div>
+    </div>
   </div>
   <div class="filters">
     <button class="filter-btn active" id="filterAll" onclick="setFilter('all')">All</button>
@@ -1387,6 +1391,8 @@
     if (tc) tc.textContent = allItems.length;
     var rc = document.getElementById('read-count');
     if (rc) rc.textContent = readCount;
+    var uc = document.getElementById('unread-count');
+    if (uc) uc.textContent = allItems.length - readCount;
     // Update search placeholder with real count
     var si = document.getElementById('searchInput');
     if (si && !si.dataset.set) { si.placeholder = 'Search ' + allItems.length + ' books...'; si.dataset.set = '1'; }
