@@ -492,7 +492,7 @@
   <div class="section-header">
     <span class="section-num">3</span>
     <span class="section-title">Investing Fundamentals</span>
-    <span class="section-count">26 books</span>
+    <span class="section-count">27 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> A Random Walk Down Wall Street <span class="author">— Burton Malkiel</span></li>
@@ -521,6 +521,7 @@
     <li>The Small Business Bible <span class="author">— Steven D. Strauss</span></li>
     <li>A Non-Random Walk Down Wall Street <span class="author">— Andrew Lo &amp; A. Craig MacKinlay</span></li>
     <li>The Little Book of Safe Money <span class="author">— Jason Zweig</span></li>
+    <li>Bogle On Mutual Funds <span class="author">— John C. Bogle</span></li>
   </ul>
 </div>
 
@@ -612,7 +613,7 @@
   <div class="section-header">
     <span class="section-num">6</span>
     <span class="section-title">Economic History &amp; Financial Crises</span>
-    <span class="section-count">42 books</span>
+    <span class="section-count">43 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> Big Debt Crises <span class="author">— Ray Dalio</span></li>
@@ -661,6 +662,7 @@
     <li>The Downfall of Money: Germany's Hyperinflation and the Destruction of the Middle Class <span class="author">— Frederick Taylor</span></li>
     <li>Can It Happen Again? <span class="author">— Hyman Minsky</span></li>
     <li>A Brief History of Doom <span class="author">— Richard Vague</span></li>
+    <li>The Go-Go Years <span class="author">— John Brooks</span></li>
   </ul>
 </div>
 
@@ -774,7 +776,7 @@
   <div class="section-header">
     <span class="section-num">10</span>
     <span class="section-title">Value Investing &amp; Equities</span>
-    <span class="section-count">38 books</span>
+    <span class="section-count">39 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> The Intelligent Investor <span class="author">— Benjamin Graham</span></li>
@@ -822,6 +824,7 @@
     <li>Super Sectors <span class="author">— John Nyaradi</span></li>
     <li>The Education of a Value Investor <span class="author">— Guy Spier</span></li>
     <li class="starred"><span class="star">&#9733;</span> The Dhandho Investor <span class="author">— Mohnish Pabrai</span></li>
+    <li>Paths to Wealth Through Common Stocks <span class="author">— Philip A. Fisher</span></li>
   </ul>
 </div>
 
@@ -970,7 +973,7 @@
   <div class="section-header">
     <span class="section-num">17</span>
     <span class="section-title">Trading &amp; Technical Analysis</span>
-    <span class="section-count">67 books</span>
+    <span class="section-count">69 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> Market Wizards <span class="author">— Jack Schwager</span></li>
@@ -1042,6 +1045,8 @@
     <li>Market Momentum: Theory and Practice <span class="author">— Stephen Satchell &amp; Andrew Grant</span></li>
     <li>Learn to Trade Momentum Stocks <span class="author">— Matthew Kratter</span></li>
     <li>Trading Momentum <span class="author">— Lex van Dam</span></li>
+    <li>The Battle for Investment Survival <span class="author">— Gerald M. Loeb</span></li>
+    <li>The Art of Speculation <span class="author">— Philip L. Carret</span></li>
   </ul>
 </div>
 
@@ -1096,7 +1101,7 @@
   <div class="section-header">
     <span class="section-num">20</span>
     <span class="section-title">Quantitative &amp; Algorithmic Trading</span>
-    <span class="section-count">53 books</span>
+    <span class="section-count">54 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> The Quants <span class="author">— Scott Patterson</span></li>
@@ -1152,6 +1157,7 @@
     <li>Calculated Bets <span class="author">— Steven Skiena</span></li>
     <li>How Not to Be Wrong: The Power of Mathematical Thinking <span class="author">— Jordan Ellenberg</span></li>
     <li>What's Luck Got to Do with It? <span class="author">— Joseph Mazur</span></li>
+    <li>Frequently Asked Questions in Quantitative Finance <span class="author">— Paul Wilmott</span></li>
   </ul>
 </div>
 
@@ -1260,7 +1266,7 @@
   <div class="section-header">
     <span class="section-num">24</span>
     <span class="section-title">Wall Street Stories &amp; Biographies</span>
-    <span class="section-count">39 books</span>
+    <span class="section-count">40 books</span>
   </div>
   <ul class="book-list">
     <li class="starred"><span class="star">&#9733;</span> Liar's Poker <span class="author">— Michael Lewis</span></li>
@@ -1302,6 +1308,7 @@
     <li>A Man for All Markets <span class="author">— Edward O. Thorp</span></li>
     <li>Where Are the Customers' Yachts? <span class="author">— Fred Schwed Jr.</span></li>
     <li>FIASCO <span class="author">— Frank Partnoy</span></li>
+    <li>Supermoney <span class="author">— George Goodman</span></li>
   </ul>
 </div>
 
@@ -1413,20 +1420,29 @@
   }
   function saveRead(r) { localStorage.setItem(KEY, JSON.stringify(r)); }
 
-  async function fireGet(url) {
-    try { var r = await fetch(url); return await r.json(); } catch(e) { return { status: 'error' }; }
+  function fireGet(url) { var img = new Image(); img.src = url; }
+
+  function jsonpFetch(url) {
+    return new Promise(function(resolve, reject) {
+      var cbName = '_rlCb_' + Date.now() + '_' + Math.random().toString(36).substr(2, 5);
+      var script = document.createElement('script');
+      var done = false;
+      window[cbName] = function(resp) { done = true; delete window[cbName]; script.remove(); resolve(resp); };
+      script.src = url + (url.includes('?') ? '&' : '?') + 'callback=' + cbName;
+      script.onerror = function() { if (!done) { delete window[cbName]; script.remove(); reject('Failed'); } };
+      setTimeout(function() { if (!done) { delete window[cbName]; script.remove(); reject('Timeout'); } }, 15000);
+      document.head.appendChild(script);
+    });
   }
 
-  async function syncFromCloud() {
-    try {
-      var data = await fireGet(SYNC_URL + '?action=get_masterlist');
+  function syncFromCloud() {
+    jsonpFetch(SYNC_URL + '?action=get_masterlist').then(function(data) {
       if (data.status === 'ok' && data.masterlist_read) {
-        // Cloud is source of truth — replace local entirely
         saveRead(data.masterlist_read);
       }
       syncReady = true;
       render();
-    } catch(e) { syncReady = true; }
+    }).catch(function() { syncReady = true; });
   }
 
   function bookKey(li) {
@@ -1558,14 +1574,17 @@
     if (nowRead) { read[key] = true; } else { delete read[key]; }
     saveRead(read);
     render();
-    // Sync to cloud and use response as source of truth
+    // Sync to cloud — img-based write (bypasses CORS), then JSONP verify
     if (syncReady) {
-      fireGet(SYNC_URL + '?action=toggle_masterlist&book=' + encodeURIComponent(key) + '&read=' + nowRead).then(function(data) {
-        if (data.status === 'ok' && data.masterlist_read) {
-          saveRead(data.masterlist_read);
-          render();
-        }
-      });
+      fireGet(SYNC_URL + '?action=toggle_masterlist&book=' + encodeURIComponent(key) + '&read=' + nowRead);
+      setTimeout(function() {
+        jsonpFetch(SYNC_URL + '?action=get_masterlist').then(function(data) {
+          if (data.status === 'ok' && data.masterlist_read) {
+            saveRead(data.masterlist_read);
+            render();
+          }
+        }).catch(function() {});
+      }, 2000);
     }
   });
 
