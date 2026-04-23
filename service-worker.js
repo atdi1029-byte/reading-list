@@ -1,4 +1,4 @@
-const V = 'readinglist-v55';
+const V = 'readinglist-v56';
 const ASSETS = ['./index.html', './manifest.json'];
 
 self.addEventListener('install', e => {
