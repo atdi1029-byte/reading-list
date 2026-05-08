@@ -1842,9 +1842,214 @@
     renderRecs();
   }
 
-  // Scored across 3 axes (0-10): money=active returns, macro=big picture, safe=wealth preservation
-  // Every book in the list scored — position = read priority for that goal
-  // Top 5 unread shown at any time; list auto-updates as books are marked read
+  // Dynamic scoring: every book gets a position in every list.
+  // Section defaults [money, macro, safe] — books inherit section score unless overridden.
+  // money=active returns, macro=big picture economics, safe=wealth preservation
+  var SEC = {
+    1:[4,2,7], 2:[3,7,3], 3:[5,3,8], 4:[3,7,3], 5:[4,8,4],
+    6:[5,8,5], 7:[6,5,6], 8:[6,4,7], 9:[7,2,4], 10:[7,4,5],
+    11:[5,5,5], 12:[5,3,5], 13:[5,7,4], 14:[4,7,3], 15:[7,3,3],
+    16:[5,5,3], 17:[7,3,3], 18:[7,2,4], 19:[5,7,4], 20:[6,3,3],
+    21:[7,3,6], 22:[5,8,4], 23:[6,6,4], 24:[6,5,3], 25:[5,3,3],
+    26:[3,7,3], 27:[4,2,4], 28:[1,1,2]
+  };
+  // Per-book overrides [money, macro, safe]
+  var BS = {
+    // Personal Finance
+    'i-will-teach-you-to-be-rich':[5,2,8],'the-simple-path-to-wealth':[4,2,9],
+    'your-money-or-your-life':[4,2,9],'the-total-money-makeover':[3,1,7],
+    'the-millionaire-next-door':[4,2,7],'the-millionaire-mind':[4,2,6],
+    'set-for-life':[5,2,7],'the-millionaire-fastlane':[7,2,7],
+    'rich-dad-poor-dad':[7,2,6],'the-richest-man-in-babylon':[4,2,7],
+    'tax-free-wealth':[7,2,5],'die-with-zero':[3,2,7],
+    'quit-like-a-millionaire':[4,2,7],'millionaire-teacher':[4,2,7],
+    'how-to-make-your-money-last':[3,2,7],'protecting-your-wealth-in-good-times-and-bad':[3,2,7],
+    'rich-dad-s-cashflow-quadrant':[6,2,5],'the-only-investment-guide-you-ll-ever-need':[5,2,6],
+    'financial-freedom-a-proven-path':[4,2,6],'the-wealthy-barber':[3,2,6],
+    // Economics
+    'basic-economics-vol-1-2':[4,8,3],'the-wealth-of-nations':[4,9,3],
+    'talking-to-my-daughter-about-the-economy':[3,8,3],'naked-economics':[3,7,3],
+    'technofeudalism-what-killed-capitalism':[3,7,3],'applied-economics':[3,7,3],
+    '23-things-they-don-t-tell-you-about-capitalism':[3,7,3],
+    'the-worldly-philosophers':[3,7,3],'how-an-economy-grows':[3,7,3],
+    'mankiw-s-principles-of-economics':[3,7,3],'capitalism-socialism-and-democracy':[3,7,3],
+    // Investing Fundamentals
+    'just-keep-buying':[5,3,9],'winning-the-loser-s-game':[7,3,9],
+    'a-random-walk-down-wall-street':[5,3,9],'the-little-book-of-common-sense-investing':[5,3,9],
+    'common-sense-on-mutual-funds':[5,3,8],'the-four-pillars-of-investing':[5,3,8],
+    'the-investor-s-manifesto':[5,3,7],'unconventional-success':[5,3,8],
+    'the-intelligent-asset-allocator':[5,3,7],'your-complete-guide-to-factor-based-investing':[6,3,7],
+    'stocks-for-the-long-run':[6,4,7],'balance':[5,3,7],
+    'global-asset-allocation':[6,3,7],'the-bogleheads-guide-to-investing':[5,3,7],
+    'the-bogleheads-guide-to-the-three-fund-portfolio':[4,2,7],
+    'wise-investing-made-simple':[4,2,6],'the-new-coffeehouse-investor':[4,2,6],
+    // Free Markets
+    'capital-in-the-twenty-first-century':[3,8,3],'free-to-choose':[3,7,3],
+    'capitalism-and-freedom':[3,7,3],'the-road-to-serfdom':[3,7,3],
+    // Monetary Policy
+    'the-price-of-time-the-real-story-of-interest':[5,8,4],
+    'a-history-of-interest-rates':[4,8,4],'the-creature-from-jekyll-island':[4,8,4],
+    'when-money-dies':[4,8,4],'a-monetary-history-of-the-united-states-1867-1960':[4,8,4],
+    'the-general-theory-of-employment-interest-and-money':[3,8,3],
+    'central-banking-101':[4,7,3],'the-fiat-standard':[4,7,3],
+    'fed-up':[3,7,3],'the-alchemists':[3,7,3],'between-debt-and-the-devil':[3,7,3],
+    'dying-of-money':[3,7,3],'the-end-of-alchemy-money-banking-and-the-future-of-the-global-economy':[3,7,3],
+    // Economic History
+    'big-debt-crises':[7,10,6],'against-the-gods-the-remarkable-story-of-risk':[7,7,6],
+    'this-time-is-different-eight-centuries-of-financial-folly':[5,9,5],
+    'manias-panics-and-crashes':[6,8,5],'extraordinary-popular-delusions-and-the-madness-of-crowds':[5,8,5],
+    'devil-take-the-hindmost-a-history-of-financial-speculation':[6,8,5],
+    'the-big-short':[6,8,4],'lords-of-finance':[5,8,4],'when-genius-failed':[6,7,4],
+    'the-great-crash-1929':[4,7,4],'can-it-happen-again':[3,7,4],
+    'a-short-history-of-financial-euphoria':[4,7,4],'the-lessons-of-history':[3,7,4],
+    // Behavioral Finance
+    'thinking-fast-and-slow':[6,5,7],'the-psychology-of-money':[6,5,8],
+    'fooled-by-randomness':[6,5,7],'the-black-swan':[6,8,6],
+    'antifragile':[6,6,7],'misbehaving':[8,5,6],
+    'poor-charlie-s-almanack':[9,5,6],'what-i-learned-losing-a-million-dollars':[8,4,5],
+    'same-as-ever':[5,5,7],'irrational-exuberance':[6,7,5],
+    'animal-spirits':[4,7,4],'narrative-economics':[4,7,4],
+    'thinking-in-bets':[6,4,5],'the-behavioral-investor':[6,4,6],
+    'your-money-and-your-brain':[5,4,6],'the-disciplined-trader':[7,3,4],
+    // Portfolio Management
+    'the-most-important-thing':[8,4,8],'pioneering-portfolio-management':[6,4,8],
+    'expected-returns':[8,5,7],'mastering-the-market-cycle':[7,8,5],
+    'quantitative-momentum':[8,3,5],'safe-haven':[8,3,6],
+    'the-missing-billionaires':[8,3,7],'unexpected-returns':[8,7,6],
+    'all-about-asset-allocation':[6,3,7],'the-dao-of-capital':[7,4,5],
+    'capital-allocation':[7,4,5],'quality-investing':[7,4,5],
+    // Accounting
+    'the-interpretation-of-financial-statements':[8,2,4],
+    'financial-statements-a-step-by-step-guide':[7,2,4],
+    'warren-buffett-and-the-interpretation-of-financial-statements':[7,2,4],
+    // Value Investing
+    'the-intelligent-investor':[10,4,6],'margin-of-safety':[10,3,5],
+    'the-essays-of-warren-buffett':[9,3,5],'one-up-on-wall-street':[9,3,5],
+    'common-stocks-and-uncommon-profits':[9,3,5],'you-can-be-a-stock-market-genius':[9,3,5],
+    'the-dhandho-investor':[9,3,5],'100-baggers':[9,3,5],
+    'security-analysis':[9,3,5],'the-outsiders':[8,4,5],
+    'being-right-or-making-money':[8,4,5],
+    'stan-weinstein-s-secrets-for-profiting-in-bull-and-bear-markets':[8,3,4],
+    'the-warren-buffett-way':[8,3,5],'anatomy-of-the-bear':[8,8,5],
+    'expectations-investing':[7,3,5],'contrarian-investment-strategies':[7,3,5],
+    'the-education-of-a-value-investor':[7,3,5],'beating-the-street':[7,3,5],
+    'capital-returns-investing-through-the-capital-cycle':[7,4,5],
+    'competition-demystified':[7,3,5],'how-to-make-money-in-stocks':[7,3,4],
+    'the-little-book-that-still-beats-the-market':[7,3,5],
+    'value-investing':[7,3,5],'investment-valuation':[6,3,4],
+    // Real Estate
+    'what-every-real-estate-investor-needs-to-know-about-cash-flow':[5,3,7],
+    'the-18-6-year-real-estate-cycle':[5,8,4],'the-book-on-rental-property-investing':[6,2,6],
+    'the-millionaire-real-estate-investor':[6,2,6],'investing-in-reits':[5,2,6],
+    // Commodities
+    'the-prize':[5,8,4],'the-world-for-sale':[5,8,4],'hot-commodities':[6,7,4],
+    'the-golden-constant-the-english-and-american-experience-1560-2007':[4,7,4],
+    'the-power-of-gold':[4,7,4],
+    // Forex
+    'trade-wars-are-class-wars':[4,9,3],'princes-of-the-yen':[4,9,3],
+    'making-sense-of-the-dollar':[4,7,3],
+    // Options
+    'option-volatility-and-pricing':[8,3,3],'options-as-a-strategic-investment':[8,3,3],
+    // Crypto
+    'broken-money':[5,9,4],'cryptoassets':[6,5,3],
+    // Trading & TA
+    'market-wizards':[8,3,4],'hedge-fund-market-wizards':[8,3,4],
+    'reminiscences-of-a-stock-operator':[8,3,4],
+    'trade-your-way-to-financial-freedom':[9,3,4],'trend-following':[9,3,4],
+    'dual-momentum-investing':[8,3,4],'the-complete-turtle-trader':[8,3,4],
+    'the-mathematics-of-money-management':[8,3,4],
+    'the-man-who-solved-the-market':[7,3,4],'following-the-trend':[7,3,4],
+    'systematic-trading':[7,3,4],'the-art-of-short-selling':[7,3,4],
+    'martin-zweig-s-winning-on-wall-street':[7,3,4],'algorithmic-trading':[7,3,3],
+    'the-new-market-wizards':[8,3,4],'unknown-market-wizards':[8,3,4],
+    'trend-commandments':[7,3,3],'stocks-on-the-move':[7,3,3],
+    'the-playbook':[6,2,3],'diary-of-a-professional-commodity-trader':[6,3,3],
+    // Trading Psychology
+    'trading-psychology-2-0':[8,2,5],'trading-in-the-zone':[7,2,4],
+    'best-loser-wins':[7,2,4],'the-daily-trading-coach':[6,2,4],
+    // Cycles & Timing
+    'secular-cycles':[5,8,4],'the-fourth-turning':[4,8,6],
+    'capital-wars-the-rise-of-global-liquidity':[5,9,4],
+    'the-great-wave-price-revolutions':[4,8,4],
+    'technological-revolutions-and-financial-capital':[5,8,4],
+    'the-long-wave-cycle':[4,7,4],'generations':[4,7,4],
+    'mastering-hurst-cycle-analysis':[6,5,4],'stock-trader-s-almanac':[6,4,4],
+    'anatomy-of-the-bear-lessons-from-wall-street-s-four-great-bottoms':[8,8,5],
+    // Quant
+    'fortune-s-formula':[8,3,4],'machine-learning-for-asset-managers':[7,3,3],
+    'algorithmic-trading':[7,3,3],'the-quants':[6,3,3],'flash-boys':[5,4,3],
+    'superforecasting':[6,5,4],'the-signal-and-the-noise':[6,4,4],
+    'beat-the-dealer':[6,2,3],'systematic-trading':[7,3,3],
+    // Risk Management
+    'definitive-guide-to-position-sizing-strategies':[9,3,5],
+    'the-art-of-execution':[8,3,5],'way-of-the-turtle':[7,3,4],
+    'the-zurich-axioms':[7,3,4],'red-blooded-risk':[7,3,4],
+    'the-success-equation':[6,3,5],
+    // Macro Investing
+    'the-changing-world-order':[5,10,5],'why-nations-fail':[4,9,4],
+    'the-accidental-superpower':[4,9,4],
+    'the-end-of-the-world-is-just-the-beginning':[4,8,4],
+    'the-sovereign-individual':[5,8,5],'the-new-paradigm-for-financial-markets':[5,8,4],
+    'the-volatility-machine':[5,8,4],'the-rise-of-carry':[5,8,4],
+    'geopolitical-alpha':[5,8,4],'principles':[7,7,6],
+    'the-rise-and-fall-of-great-powers':[4,8,4],'the-alchemy-of-finance':[5,7,4],
+    'the-narrow-corridor':[3,7,3],'world-order':[3,7,3],
+    'destined-for-war-can-america-and-china-escape-thucydides-s-trap':[3,7,3],
+    'chip-war':[4,7,4],'energy-and-civilization':[4,7,4],
+    'confessions-of-an-economic-hitman':[3,7,3],
+    'how-countries-go-broke':[4,8,4],'the-fund-ray-dalio':[4,6,3],
+    // Economic Indicators
+    'the-trader-s-guide-to-key-economic-indicators':[7,6,4],
+    // Wall Street Stories
+    'more-money-than-god':[7,5,3],'the-ascent-of-money':[5,8,4],
+    'inside-the-house-of-money':[7,7,3],'a-man-for-all-markets':[7,3,3],
+    'liar-s-poker':[7,4,3],'when-genius-failed':[6,7,4],
+    'the-snowball-warren-buffett-and-the-business-of-life':[6,3,4],
+    'barbarians-at-the-gate':[6,4,3],'too-big-to-fail':[5,7,3],
+    'the-big-short':[6,8,4],'trillions':[5,4,3],
+    // Geopolitics & Sociology
+    'guns-germs-and-steel':[3,8,3],'the-great-leveler':[3,8,3],
+    'sapiens':[3,7,3],'seven-powers':[8,5,4],'bowling-alone':[2,6,3],
+    'the-power-law':[5,5,3],'the-48-laws-of-power':[4,4,3],
+    // Self-Development
+    'zero-to-one':[6,3,4],'think-and-grow-rich':[4,2,4],
+    'meditations':[3,2,4],'influence-the-psychology-of-persuasion':[5,3,4]
+  };
+
+  var GOALS_CACHE = null;
+
+  function buildGoals() {
+    var goals = {money:[],macro:[],safe:[]};
+    document.querySelectorAll('.section').forEach(function(sec) {
+      var numEl = sec.querySelector('.section-num');
+      var sn = numEl ? parseInt(numEl.textContent,10) : 0;
+      var def = SEC[sn] || [3,3,3];
+      sec.querySelectorAll('.book-list li').forEach(function(li) {
+        var clone = li.cloneNode(true);
+        clone.querySelectorAll('.author,.note,.star').forEach(function(e){e.remove();});
+        var t = clone.textContent.trim();
+        var aEl = li.querySelector('.author');
+        var a = aEl ? aEl.textContent.replace(/^\s*[—\-]\s*/,'').trim() : '';
+        var k = t.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').substring(0,80);
+        var sc = BS[k] || def;
+        goals.money.push({key:k,title:t,author:a,score:sc[0]});
+        goals.macro.push({key:k,title:t,author:a,score:sc[1]});
+        goals.safe.push({key:k,title:t,author:a,score:sc[2]});
+      });
+    });
+    ['money','macro','safe'].forEach(function(g) {
+      goals[g].sort(function(a,b){return b.score-a.score;});
+      var seen = {};
+      goals[g] = goals[g].filter(function(b){
+        if (seen[b.key]) return false;
+        seen[b.key] = true;
+        return true;
+      });
+    });
+    return goals;
+  }
+
+  // placeholder — replaced below (keeping old variable name for compat)
   var GOALS = {
     money: [
       // Score 10
@@ -2086,8 +2291,9 @@
   function renderRecs() {
     var el = document.getElementById('recResults');
     if (!el || !activeGoal) return;
+    if (!GOALS_CACHE) GOALS_CACHE = buildGoals();
     var read = getRead();
-    var unread = (GOALS[activeGoal] || []).filter(function(b) {
+    var unread = (GOALS_CACHE[activeGoal] || []).filter(function(b) {
       return !read[b.key];
     }).slice(0, 5);
     if (!unread.length) {
