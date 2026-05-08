@@ -335,6 +335,72 @@
     margin-top: 40px;
   }
 
+  /* ---- Next 5 to Read Panel ---- */
+  .rec-panel {
+    max-width: 800px;
+    margin: 0 auto 24px;
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .rec-header {
+    padding: 14px 20px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .rec-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+    white-space: nowrap;
+  }
+  .rec-goals { display: flex; gap: 8px; flex-wrap: wrap; }
+  .rec-goal-btn {
+    background: rgba(0,0,0,0.05);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 4px 14px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .rec-goal-btn:hover { background: rgba(0,0,0,0.08); color: var(--text); }
+  .rec-goal-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .rec-item {
+    padding: 10px 20px;
+    border-bottom: 1px solid #f0ede8;
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-size: 14px;
+  }
+  .rec-item:last-child { border-bottom: none; }
+  .rec-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 20px;
+  }
+  .rec-book { font-weight: 500; flex: 1; }
+  .rec-author { color: var(--muted); font-size: 12px; font-weight: 300; }
+  .rec-msg {
+    padding: 18px 20px;
+    color: var(--muted);
+    font-size: 13px;
+    font-style: italic;
+    text-align: center;
+  }
+
   @media print {
     body { padding: 0; background: #fff; }
     .cover { padding: 60px 30px 50px; }
@@ -393,6 +459,18 @@
 
 <div class="legend">
   <span class="star-icon">&#9733;</span> = <strong>Must-read</strong> — If you only read a handful per category, read the starred ones first. Click any book to mark as read.
+</div>
+
+<div class="rec-panel" id="recPanel">
+  <div class="rec-header">
+    <span class="rec-title">Next 5 to read:</span>
+    <div class="rec-goals">
+      <button class="rec-goal-btn" data-goal="money" onclick="showRecs('money')">Make Money</button>
+      <button class="rec-goal-btn" data-goal="macro" onclick="showRecs('macro')">Learn Macro</button>
+      <button class="rec-goal-btn" data-goal="safe" onclick="showRecs('safe')">Don't Die Poor</button>
+    </div>
+  </div>
+  <div id="recResults"></div>
 </div>
 
 <div class="no-results" id="noResults">No books match your search.</div>
@@ -1761,6 +1839,78 @@
     // No results
     var nr = document.getElementById('noResults');
     if (nr) nr.style.display = (searchTerm && !anyVisible) ? 'block' : 'none';
+    renderRecs();
+  }
+
+  var GOALS = {
+    money: [
+      { key: 'the-intelligent-investor', title: 'The Intelligent Investor', author: 'Benjamin Graham' },
+      { key: 'one-up-on-wall-street', title: 'One Up on Wall Street', author: 'Peter Lynch' },
+      { key: 'common-stocks-and-uncommon-profits', title: 'Common Stocks and Uncommon Profits', author: 'Philip Fisher' },
+      { key: 'margin-of-safety', title: 'Margin of Safety', author: 'Seth Klarman' },
+      { key: 'trade-your-way-to-financial-freedom', title: 'Trade Your Way to Financial Freedom', author: 'Van Tharp' },
+      { key: 'the-dhandho-investor', title: 'The Dhandho Investor', author: 'Mohnish Pabrai' },
+      { key: 'you-can-be-a-stock-market-genius', title: 'You Can Be a Stock Market Genius', author: 'Joel Greenblatt' },
+      { key: 'unknown-market-wizards', title: 'Unknown Market Wizards', author: 'Jack Schwager' },
+      { key: '100-baggers', title: '100 Baggers', author: 'Christopher Mayer' },
+      { key: 'trend-following', title: 'Trend Following', author: 'Michael Covel' },
+      { key: 'option-volatility-and-pricing', title: 'Option Volatility and Pricing', author: 'Sheldon Natenberg' },
+      { key: 'security-analysis', title: 'Security Analysis', author: 'Graham & Dodd' }
+    ],
+    macro: [
+      { key: 'the-price-of-time-the-real-story-of-interest', title: 'The Price of Time', author: 'Edward Chancellor' },
+      { key: 'the-creature-from-jekyll-island', title: 'The Creature from Jekyll Island', author: 'G. Edward Griffin' },
+      { key: 'trade-wars-are-class-wars', title: 'Trade Wars Are Class Wars', author: 'Matthew Klein' },
+      { key: 'princes-of-the-yen', title: 'Princes of the Yen', author: 'Richard Werner' },
+      { key: 'broken-money', title: 'Broken Money', author: 'Lyn Alden' },
+      { key: 'global-macro-trading', title: 'Global Macro Trading', author: 'Greg Gliner' },
+      { key: 'the-lords-of-easy-money', title: 'The Lords of Easy Money', author: 'Christopher Leonard' },
+      { key: 'free-to-choose', title: 'Free to Choose', author: 'Milton Friedman' },
+      { key: 'a-monetary-history-of-the-united-states-1867-1960', title: 'A Monetary History of the United States', author: 'Friedman & Schwartz' },
+      { key: 'anatomy-of-the-bear', title: 'Anatomy of the Bear', author: 'Russell Napier' }
+    ],
+    safe: [
+      { key: 'the-little-book-of-common-sense-investing', title: 'The Little Book of Common Sense Investing', author: 'John Bogle' },
+      { key: 'a-random-walk-down-wall-street', title: 'A Random Walk Down Wall Street', author: 'Burton Malkiel' },
+      { key: 'just-keep-buying', title: 'Just Keep Buying', author: 'Nick Maggiulli' },
+      { key: 'winning-the-loser-s-game', title: "Winning the Loser's Game", author: 'Charles Ellis' },
+      { key: 'your-money-or-your-life', title: 'Your Money or Your Life', author: 'Vicki Robin' },
+      { key: 'unconventional-success', title: 'Unconventional Success', author: 'David Swensen' },
+      { key: 'your-complete-guide-to-factor-based-investing', title: 'Your Complete Guide to Factor-Based Investing', author: 'Larry Swedroe' },
+      { key: 'stocks-for-the-long-run', title: 'Stocks for the Long Run', author: 'Jeremy Siegel' },
+      { key: 'free-to-choose', title: 'Free to Choose', author: 'Milton Friedman' },
+      { key: 'the-price-of-time-the-real-story-of-interest', title: 'The Price of Time', author: 'Edward Chancellor' }
+    ]
+  };
+
+  var activeGoal = null;
+
+  window.showRecs = function(goal) {
+    activeGoal = goal;
+    document.querySelectorAll('.rec-goal-btn').forEach(function(btn) {
+      btn.classList.toggle('active', btn.dataset.goal === goal);
+    });
+    renderRecs();
+  };
+
+  function renderRecs() {
+    var el = document.getElementById('recResults');
+    if (!el || !activeGoal) return;
+    var read = getRead();
+    var unread = (GOALS[activeGoal] || []).filter(function(b) {
+      return !read[b.key];
+    }).slice(0, 5);
+    if (!unread.length) {
+      el.innerHTML = '<div class="rec-msg">You\'ve read everything in this list. Impressive.</div>';
+      return;
+    }
+    el.innerHTML = unread.map(function(b, i) {
+      return '<div class="rec-item">' +
+        '<span class="rec-num">' + (i + 1) + '</span>' +
+        '<span class="rec-book">' + b.title +
+        ' <span class="rec-author">— ' + b.author + '</span></span>' +
+        '</div>';
+    }).join('');
   }
 
   // Pre-seed books marked as read (fixed keys to match bookKey output)
