@@ -8,10 +8,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <title>Master Investment Reading List</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap">
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=Inter:wght@300;400;500;600&display=swap');
 
   :root {
     --bg: #faf8f5;
@@ -2405,12 +2403,10 @@
     render();
   };
 
-  // Defer heavy work until after first paint
-  requestAnimationFrame(function() {
-    render();
-    // Cloud sync after render
-    setTimeout(syncFromCloud, 100);
-  });
+  render();
+
+  // Cloud sync on load
+  syncFromCloud();
 
   // Re-sync when app comes to foreground
   document.addEventListener('visibilitychange', function() {
