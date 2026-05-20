@@ -2041,7 +2041,35 @@
     'the-power-law':[5,5,3],'the-48-laws-of-power':[4,4,3],
     // Self-Development
     'zero-to-one':[6,3,4],'think-and-grow-rich':[4,2,4],
-    'meditations':[3,2,4],'influence-the-psychology-of-persuasion':[5,3,4]
+    'meditations':[3,2,4],'influence-the-psychology-of-persuasion':[5,3,4],
+    // --- Added overrides for completed shelf books ---
+    'skin-in-the-game':[6,5,6],'the-power-of-habit':[4,3,5],
+    'the-house-of-rothschild':[5,8,4],
+    'the-principles-of-banking':[4,7,4],'the-small-business-bible':[7,2,4],
+    'the-middle-east':[3,8,3],'the-theory-of-money-and-credit':[3,8,3],
+    'the-hour-between-dog-and-wolf':[7,4,3],
+    'crash-proof-2-0':[5,7,5],
+    'the-long-good-buy-analysing-cycles-in-markets':[8,7,5],
+    'how-to-retire-on-dividends':[8,3,8],
+    'the-bond-book':[6,5,6],'the-strategic-bond-investor':[6,5,5],
+    'the-taylor-trading-technique':[9,2,3],
+    'options-made-easy':[7,2,3],'the-options-playbook':[7,2,3],
+    'trading-options-greeks':[8,2,3],
+    'trading-with-intermarket-analysis':[8,5,4],
+    'historical-dynamics-why-states-rise-and-fall':[3,8,3],
+    'the-fate-of-empires-and-search-for-survival':[3,8,3],
+    'a-primer-on-money':[3,7,3],
+    'a-primer-on-money-banking-and-gold':[3,7,3],
+    'commodities-for-dummies':[5,5,4],
+    'king-dollar':[4,8,4],
+    'poor-richard-s-almanack':[4,2,5],
+    'the-rise-and-fall-of-american-growth':[3,8,3],
+    'debt-the-first-5-000-years':[3,8,4],
+    'titan-the-life-of-john-d-rockefeller-sr':[5,5,4],
+    'the-worldly-philosophers':[3,8,3],
+    'the-ascent-of-money':[4,9,4],
+    'principles-of-economics':[3,7,3],
+    'capital-in-the-twenty-first-century':[3,9,3]
   };
 
   var GOALS_CACHE = null;
@@ -2077,10 +2105,10 @@
     return goals;
   }
 
-  // placeholder — replaced below (keeping old variable name for compat)
+  // GOALS is built dynamically by buildGoals() from DOM + BS scores.
+  // This static fallback is kept minimal — buildGoals() is the real source.
   var GOALS = {
     money: [
-      // Score 10
       { key: 'the-intelligent-investor', title: 'The Intelligent Investor', author: 'Benjamin Graham' },
       { key: 'margin-of-safety', title: 'Margin of Safety', author: 'Seth Klarman' },
       // Score 9
@@ -2341,7 +2369,7 @@
   }
 
   // Pre-seed books marked as read (fixed keys to match bookKey output)
-  if (!localStorage.getItem('readinglist_seeded_v5')) {
+  if (!localStorage.getItem('readinglist_seeded_v6')) {
     var read = getRead();
     [
       // Original seeds
@@ -2349,7 +2377,7 @@
       'the-richest-man-in-babylon', 'reminiscences-of-a-stock-operator',
       'come-into-my-trading-room', 'the-law', 'trading-in-the-zone',
       'the-alchemy-of-finance', 'tax-free-wealth',
-      // Completed book notes projects
+      // Completed book notes (shelf)
       'i-will-teach-you-to-be-rich', 'bond-markets', 'hedge-fund-market-wizards',
       'talking-to-my-daughter-about-the-economy', 'the-wealth-of-nations',
       'capital-wars-the-rise-of-global-liquidity', 'economics-101',
@@ -2359,15 +2387,62 @@
       'the-lessons-of-history', 'how-to-win-friends-and-influence-people',
       'atomic-habits', 'bowling-alone', 'antifragile', 'fooled-by-randomness',
       'grit', 'how-countries-go-broke', 'when-money-dies',
-      // Newly added to master list
       'personal-finance-for-dummies', 'the-bogleheads-guide-to-investing',
       'big-debt-crises', 'against-the-gods-the-remarkable-story-of-risk',
       'asset-allocation-balancing-financial-risk',
       'the-golden-constant-the-english-and-american-experience-1560-2007',
-      'mastering-the-market-cycle'
+      'mastering-the-market-cycle',
+      // v6 — newly completed shelf books
+      'a-history-of-interest-rates', 'a-man-for-all-markets',
+      'a-primer-on-money', 'a-primer-on-money-banking-and-gold',
+      'all-about-asset-allocation',
+      'anatomy-of-the-bear-lessons-from-wall-street-s-four-great-bottoms',
+      'basic-economics-vol-1-2', 'beat-the-dealer', 'beat-the-market',
+      'capital-in-the-twenty-first-century',
+      'capital-returns-investing-through-the-capital-cycle',
+      'commodities-for-dummies',
+      'crash-proof-2-0',
+      'cycles-the-mysterious-forces-that-trigger-events',
+      'debt-the-first-5-000-years',
+      'definitive-guide-to-position-sizing-strategies',
+      'expected-returns', 'fortune-s-formula',
+      'historical-dynamics-why-states-rise-and-fall',
+      'hot-commodities', 'how-to-retire-on-dividends',
+      'market-wizards', 'millionaire-teacher', 'more-money-than-god',
+      'options-as-a-strategic-investment', 'options-made-easy',
+      'pioneering-portfolio-management', 'poor-richard-s-almanack',
+      'principles', 'principles-of-economics',
+      'red-blooded-risk', 'secular-cycles', 'skin-in-the-game',
+      'stocks-for-the-long-run', 'superforecasting', 'systematic-trading',
+      'the-ascent-of-money', 'the-black-swan', 'the-bond-book',
+      'the-changing-world-order', 'the-creature-from-jekyll-island',
+      'the-fate-of-empires-and-search-for-survival',
+      'the-four-pillars-of-investing', 'the-fourth-turning',
+      'the-general-theory-of-employment-interest-and-money',
+      'the-hour-between-dog-and-wolf', 'the-house-of-rothschild',
+      'the-intelligent-asset-allocator',
+      'the-long-good-buy-analysing-cycles-in-markets',
+      'the-man-who-solved-the-market', 'the-mathematics-of-money-management',
+      'the-middle-east', 'the-millionaire-mind', 'the-most-important-thing',
+      'the-muscle-strength-pyramid-training', 'the-options-playbook',
+      'the-power-of-gold', 'the-power-of-habit',
+      'the-price-of-time-the-real-story-of-interest',
+      'the-principles-of-banking', 'the-psychology-of-money',
+      'the-quants', 'the-rise-and-fall-of-american-growth',
+      'the-rise-and-fall-of-great-powers', 'the-road-to-serfdom',
+      'the-simple-path-to-wealth', 'the-small-business-bible',
+      'the-strategic-bond-investor', 'the-taylor-trading-technique',
+      'the-theory-of-money-and-credit', 'the-worldly-philosophers',
+      'the-zurich-axioms', 'the-man-who-solved-the-market',
+      'thinking-fast-and-slow',
+      'titan-the-life-of-john-d-rockefeller-sr',
+      'trade-wars-are-class-wars', 'trading-options-greeks',
+      'trading-with-intermarket-analysis', 'unknown-market-wizards',
+      'way-of-the-turtle', 'why-nations-fail',
+      'anatomy-of-the-bear'
     ].forEach(function(k) { read[k] = true; });
     saveRead(read);
-    localStorage.setItem('readinglist_seeded_v5', '1');
+    localStorage.setItem('readinglist_seeded_v6', '1');
   }
 
   // Click to toggle read — skip if user is selecting text
