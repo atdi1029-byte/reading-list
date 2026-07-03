@@ -3320,9 +3320,18 @@
     if (!el || !activeGoal) return;
     if (!GOALS_CACHE) GOALS_CACHE = buildGoals();
     var read = getRead();
-    var unread = (GOALS_CACHE[activeGoal] || []).filter(function(b) {
+    var candidates = (GOALS_CACHE[activeGoal] || []).filter(function(b) {
       return !read[b.key];
-    }).slice(0, 5);
+    });
+    var unread = [], recent = [];
+    for (var i = 0; i < candidates.length && unread.length < 5; i++) {
+      var surname = candidates[i].author.split(/[,&]/)[0].trim().split(/\s+/).pop().toLowerCase();
+      if (recent.indexOf(surname) === -1) {
+        unread.push(candidates[i]);
+        recent.push(surname);
+        if (recent.length > 5) recent.shift();
+      }
+    }
     if (!unread.length) {
       el.innerHTML = '<div class="rec-msg">You\'ve read everything in this list. Impressive.</div>';
       return;
