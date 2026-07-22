@@ -448,6 +448,94 @@
     .cover .stats { flex-direction: column; gap: 15px; }
     .container { padding: 0 15px 40px; }
   }
+
+  /* ---- Reading Order Phases ---- */
+  .phase-btn {
+    background: rgba(0,0,0,0.05);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 3px 12px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-left: 8px;
+    white-space: nowrap;
+  }
+  .phase-btn:hover { background: rgba(0,0,0,0.08); color: var(--text); }
+  .phase-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+  .phase-overlay {
+    display: none;
+    padding: 12px 20px 16px;
+    border-top: 1px solid var(--border);
+    background: linear-gradient(180deg, var(--accent-light) 0%, var(--section-bg) 100%);
+  }
+  .phase-overlay.open { display: block; }
+
+  .phase-group {
+    margin-bottom: 14px;
+  }
+  .phase-group:last-child { margin-bottom: 0; }
+
+  .phase-label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .phase-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    font-weight: 700;
+    color: #fff;
+    background: var(--accent);
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .phase-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .phase-progress {
+    font-size: 11px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+  .phase-books {
+    list-style: none;
+    padding-left: 30px;
+  }
+  .phase-books li {
+    padding: 3px 0;
+    font-size: 13px;
+    color: var(--text);
+    border-bottom: 1px solid rgba(0,0,0,0.04);
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+  }
+  .phase-books li:last-child { border-bottom: none; }
+  .phase-books li .star { color: var(--star); font-size: 12px; flex-shrink: 0; }
+  .phase-books li .author { color: var(--muted); font-size: 11px; font-weight: 300; }
+  .phase-books li.read { opacity: 0.5; text-decoration: line-through; }
+  .phase-books li.read::after { content: ' \2713'; color: #3a9e4a; font-weight: 700; font-size: 12px; }
+  .phase-order-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 12px;
+    color: var(--accent);
+    min-width: 18px;
+    font-weight: 700;
+  }
 </style>
 </head>
 <body>
@@ -1985,6 +2073,364 @@
     wrap.appendChild(bar);
     hdr.appendChild(wrap);
   });
+
+
+  // ---- Reading Order Phases ----
+  var PHASES = {
+  1: [
+    {n:'Start Here',k:["i-will-teach-you-to-be-rich","the-richest-man-in-babylon","the-total-money-makeover","the-simple-path-to-wealth","rich-dad-poor-dad"]},
+    {n:'Build the Foundation',k:["personal-finance-for-dummies","personal-finance-101","you-need-a-budget","the-barefoot-investor","the-wealthy-barber","the-only-investment-guide-you-ll-ever-need","your-money-or-your-life"]},
+    {n:'Millionaire Studies',k:["the-millionaire-next-door","the-millionaire-mind","stop-acting-rich","millionaire-women-next-door","millionaire-teacher","the-millionaire-in-you","secrets-of-the-millionaire-mind"]},
+    {n:'Wealth Building Paths',k:["set-for-life","financial-freedom-a-proven-path","the-millionaire-fastlane","quit-like-a-millionaire","rich-dad-s-cashflow-quadrant","how-to-be-rich","the-science-of-getting-rich"]},
+    {n:'Spending & Longevity',k:["die-with-zero","how-to-make-your-money-last","protecting-your-wealth-in-good-times-and-bad","the-value-of-debt","you-ve-lost-it-now-what","money-for-couples"]},
+    {n:'Tax & Legal Strategy',k:["j-k-lasser-s-1001-deductions-and-tax-breaks-2026","the-tax-and-legal-playbook","tax-free-wealth"]},
+    {n:'Classics & Extras',k:["the-way-to-wealth","poor-richard-s-almanack","the-wealth-ladder","i-ll-teach-you-to-be-rich-the-journal"]},
+  ],
+  2: [
+    {n:'Start Here',k:["how-an-economy-grows","talking-to-my-daughter-about-the-economy","economics-in-one-lesson","the-kingdom-of-moltz","naked-economics"]},
+    {n:'Core Concepts',k:["economics-101","economics-for-dummies","understandable-economics","basic-economics-vol-1-2","the-undercover-economist","the-undercover-economist-strikes-back","cocktail-economics","the-most-important-lessons-in-economics-and-finance","the-price-of-everything"]},
+    {n:'Fun & Unconventional',k:["freakonomics","superfreakonomics","narconomics-how-to-run-a-drug-cartel","the-armchair-economist","the-economic-naturalist","23-things-they-don-t-tell-you-about-capitalism","the-economist-guide-to-decision-making"]},
+    {n:'Textbooks',k:["mankiw-s-principles-of-economics","principles-of-microeconomics","principles-of-macroeconomics","samuelson-nordhaus-economics","how-finance-works-the-hbr-guide-to-thinking-smart-about-the-numbers","finance-for-nonfinancial-managers","intermediate-microeconomics"]},
+    {n:'Applied & Sowell',k:["applied-economics","knowledge-and-decisions","wealth-poverty-and-politics","marxism","the-6-lessons"]},
+    {n:'History of Thought',k:["the-worldly-philosophers","the-wealth-of-nations","the-law","economic-harmonies","essai-sur-la-nature-du-commerce-en-g-n-ral","on-the-principles-of-political-economy-and-taxation","the-nature-and-logic-of-capitalism","progress-and-poverty","the-theory-of-economic-development","the-theory-of-the-leisure-class","stone-age-economics","empire-incorporated-the-corporations-that-built-british-colonialism"]},
+    {n:'Advanced & Heterodox',k:["foundation-of-economics","technofeudalism-what-killed-capitalism","debunking-economics","the-entrepreneurial-state","the-value-of-everything","keynes-the-return-of-the-master","hidden-order-the-economics-of-everyday-life","the-strategy-of-conflict","monetary-theory-and-the-trade-cycle","money-bank-credit-and-economic-cycles","human-action-a-treatise-on-economics","man-economy-and-state","history-of-economic-analysis","principles-of-economics","exploring-general-equilibrium","the-theory-of-interest","risk-uncertainty-and-profit","the-physiology-of-industry"]},
+  ],
+  3: [
+    {n:'Start Here',k:["if-you-can","the-little-book-of-common-sense-investing","just-keep-buying","why-stocks-go-up-and-down"]},
+    {n:'Core Investing',k:["a-random-walk-down-wall-street","winning-the-loser-s-game","the-four-pillars-of-investing","the-informed-investor","the-only-guide-to-a-winning-investment-strategy-you-ll-ever-need","wise-investing-made-simple"]},
+    {n:'Bogle Canon',k:["common-sense-on-mutual-funds","bogle-on-mutual-funds","the-bogle-effect","the-bogleheads-guide-to-investing","the-bogleheads-guide-to-retirement-planning","the-bogleheads-guide-to-the-three-fund-portfolio"]},
+    {n:'Asset Allocation',k:["the-intelligent-asset-allocator","the-investor-s-manifesto","balance","unconventional-success","your-complete-guide-to-factor-based-investing","the-little-book-of-safe-money"]},
+    {n:'Dividend Investing',k:["how-to-retire-on-dividends","get-rich-with-dividends","the-ultimate-dividend-playbook","the-single-best-investment","dividends-still-don-t-lie","the-income-factory","the-dividend-connection","the-strategic-dividend-investor"]},
+    {n:'Retirement & Lifestyle',k:["complete-guide-to-a-successful-and-secure-retirement","how-to-plan-for-the-perfect-retirement","the-new-coffeehouse-investor","the-lifestyle-investor","the-small-business-bible"]},
+    {n:'Advanced & Historical',k:["conservative-investors-sleep-well","the-birth-of-plenty","a-non-random-walk-down-wall-street","skating-where-the-puck-was","the-closed-end-fund-market","the-compound-effect"]},
+    {n:'Also in This Section',k:["the-incredible-shrinking-alpha","the-only-guide-to-alternative-investments-you-ll-ever-need","ages-of-the-investor","deep-risk","rational-expectations"]},
+  ],
+  4: [
+    {n:'Start Here',k:["free-to-choose","capitalism-and-freedom","the-road-to-serfdom","the-anti-capitalistic-mentality"]},
+    {n:'Critiques of Capitalism',k:["capital-in-the-twenty-first-century","the-great-reversal-how-america-gave-up-on-free-markets","free-trade-doesn-t-work"]},
+    {n:'Marx & Socialism',k:["communist-manifesto","wage-labour-and-capital","capital-a-critique-of-political-economy","das-kapital"]},
+    {n:'Austrian School',k:["socialism-an-economic-and-sociological-analysis","liberalism","planned-chaos","omnipotent-government","theory-and-history","anatomy-of-the-state","power-and-market","the-ethics-of-liberty","for-a-new-liberty"]},
+    {n:'Chicago School',k:["price-theory","human-capital","the-firm-the-market-and-the-law"]},
+    {n:'Populist & Polemical',k:["the-politically-incorrect-guide-to-economics","the-politically-incorrect-guide-to-capitalism","federal-mafia","atlas-shrugged"]},
+    {n:'Classics & Reference',k:["capitalism-socialism-and-democracy","second-treatise-of-civil-government","forty-centuries-of-wage-and-price-controls-how-not-to-fight-inflation","the-mystery-of-capital"]},
+  ],
+  5: [
+    {n:'Start Here',k:["can-t-we-just-print-more-money","central-banking-101","a-primer-on-money","a-primer-on-money-banking-and-gold","where-does-money-come-from","layered-money"]},
+    {n:'Narratives',k:["the-price-of-time-the-real-story-of-interest","fed-up","the-alchemists","trillion-dollar-triage","the-end-of-alchemy-money-banking-and-the-future-of-the-global-economy","king-dollar"]},
+    {n:'Money & Gold',k:["what-has-government-done-to-our-money","the-fiat-standard","gold-and-economic-freedom","the-case-for-gold","the-case-against-the-fed","end-the-fed","the-mystery-of-banking"]},
+    {n:'Inflation & Crises',k:["when-money-dies","dying-of-money","the-economics-of-inflation","things-are-never-so-bad-that-they-can-t-get-worse"]},
+    {n:'Modern Monetary Debate',k:["the-deficit-myth","modern-money-theory","modern-monetary-theory-and-practice","seven-deadly-innocent-frauds","between-debt-and-the-devil","the-money-trap","the-future-of-money"]},
+    {n:'Fed & Policy History',k:["the-creature-from-jekyll-island","a-monetary-history-of-the-united-states-1867-1960","a-history-of-central-banking-and-the-enslavement-of-mankind","the-secrets-of-the-federal-reserve","the-federal-reserve-after-50-years","a-history-of-money-and-banking-in-the-united-states","the-age-of-turbulence","21st-century-monetary-policy","strategies-for-monetary-policy","the-midas-paradox","hidden-repression"]},
+    {n:'Advanced & Textbooks',k:["the-general-theory-of-employment-interest-and-money","the-theory-of-money-and-credit","a-history-of-interest-rates","the-economics-of-money-banking-and-financial-markets","monetary-theory-and-policy","a-tract-on-monetary-reform","milton-friedman-money-mischief","the-role-of-monetary-policy","the-new-lombard-street","lombard-street","money-markets","money-and-banking","letter-on-money-currency-and-central-banking","gold-the-real-bills-doctrine","making-money-work-how-to-rewrite-the-rules-of-our-financial-system","currency-boards-for-developing-countries-a-handbook"]},
+    {n:'Also in This Section',k:["changing-fortunes","the-great-inflation"]},
+  ],
+  6: [
+    {n:'Start Here',k:["the-lessons-of-history","a-short-history-of-financial-euphoria","extraordinary-popular-delusions-and-the-madness-of-crowds","the-big-short","boomerang"]},
+    {n:'Classic Crisis Narratives',k:["big-debt-crises","manias-panics-and-crashes","devil-take-the-hindmost-a-history-of-financial-speculation","the-great-crash-1929","lords-of-finance","when-genius-failed","the-go-go-years","1929-inside-the-greatest-crash-in-history"]},
+    {n:'Modern Crises',k:["this-time-is-different-eight-centuries-of-financial-folly","all-the-devils-are-here","house-of-debt","stress-test","bull-by-the-horns","crashed-how-a-decade-of-financial-crises-changed-the-world","hall-of-mirrors","end-this-depression-now","a-history-of-the-united-states-in-five-crashes","a-brief-history-of-doom"]},
+    {n:'Debt & Money History',k:["debt-the-first-5-000-years","against-the-gods-the-remarkable-story-of-risk","and-forgive-them-their-debts","money-changes-everything","medici-money","investing-in-u-s-financial-history-understanding-the-past-to-forecast-the-future","other-people-s-money-and-how-the-bankers-use-it","bull-a-history-of-the-boom-and-bust-1982-2004"]},
+    {n:'Collapse & Bearish',k:["crash-proof","crash-proof-2-0","the-real-crash","conquer-the-crash","the-coming-collapse-of-the-dollar","the-money-bubble","the-dollar-crisis","empire-of-debt","mr-market-miscalculates","austerity-when-it-works-and-when-it-doesn-t"]},
+    {n:'Long-Run History',k:["the-rise-and-fall-of-american-growth","the-rise-and-fall-of-nations","the-dawn-of-everything","a-farewell-to-alms","the-lever-of-riches-technological-creativity-and-economic-progress","the-gifts-of-athena-historical-origins-of-the-knowledge-economy","a-culture-of-growth-the-origins-of-the-modern-economy","civilization-and-capitalism-15th-18th-century","the-economic-history-of-china-from-antiquity-to-the-nineteenth-century","the-new-china-playbook-beyond-socialism-and-capitalism","hugo-stinnes","the-downfall-of-money-germany-s-hyperinflation-and-the-destruction-of-the-middle"]},
+    {n:'Minsky & Structural',k:["can-it-happen-again","stabilizing-an-unstable-economy","why-minsky-matters","how-markets-fail-the-logic-of-economic-calamities","red-capitalism-the-fragile-financial-foundation-of-china-s-extraordinary-rise","endgame-the-end-of-the-debt-supercycle","boom-bust-house-prices-banking-and-the-depression-of-2010","bubble-in-the-sun","the-masters-of-capital","the-price-of-peace","the-economic-consequences-of-the-peace","when-washington-shut-down-wall-street","the-forgotten-depression","the-forgotten-man","the-jacksonian-economy","the-anatomy-of-revolution","a-brief-history-of-panics","fiat-money-inflation-in-france","john-maynard-keynes","america-s-great-depression"]},
+    {n:'Also in This Section',k:["super-imperialism-the-economic-strategy-of-american-empire","killing-the-host-how-financial-parasites-and-debt-bondage-destroy-the-global-eco","the-destiny-of-civilization-finance-capitalism-industrial-capitalism-or-socialis","j-is-for-junk-economics","the-bubble-and-beyond","the-credit-crisis-of-2008","golden-fetters","too-big-to-fail","john-maynard-keynes-the-biography","the-return-of-depression-economics","the-economics-of-taste","japan-s-policy-trap"]},
+  ],
+  7: [
+    {n:'Start Here',k:["the-psychology-of-money","same-as-ever","what-i-learned-losing-a-million-dollars","fooled-by-randomness","the-art-of-spending-money"]},
+    {n:'Taleb Canon',k:["the-black-swan","antifragile","skin-in-the-game","statistical-consequences-of-fat-tails","the-black-swan-of-cairo"]},
+    {n:'Kahneman & Thaler',k:["thinking-fast-and-slow","noise","misbehaving","the-winner-s-curse","blink","the-power-of-habit","the-paradox-of-choice","how-to-decide"]},
+    {n:'Market Psychology',k:["irrational-exuberance","animal-spirits","narrative-economics","the-crowd","the-myth-of-the-rational-market","the-little-book-of-behavioral-investing","the-laws-of-wealth"]},
+    {n:'Trading Psychology',k:["the-disciplined-trader","trading-without-fear","thinking-in-bets","mind-over-markets","your-money-and-your-brain","the-behavioral-investor","black-box-thinking"]},
+    {n:'Applied & Business',k:["poor-charlie-s-almanack","how-brands-grow-what-marketers-don-t-know","how-brands-grow-part-2","salt-sugar-fat-how-the-food-giants-hooked-us","the-wisdom-of-finance"]},
+    {n:'Advanced & Academic',k:["adaptive-markets","the-misbehavior-of-markets","fractal-market-analysis","behavioral-finance","psychology-of-financial-markets","the-new-finance","behavioral-finance-and-wealth-management","why-smart-people-make-big-money-mistakes"]},
+    {n:'Also in This Section',k:["nudge","the-bed-of-procrustes","the-fractal-geometry-of-nature","chaos-and-order-in-the-capital-markets","nonlinear-dynamics-and-chaos","the-delusions-of-crowds","the-logic-of-scientific-discovery","conjectures-and-refutations","the-open-society-and-its-enemies"]},
+  ],
+  8: [
+    {n:'Start Here',k:["the-most-important-thing","all-about-asset-allocation","understanding-asset-allocation"]},
+    {n:'Core Allocation',k:["asset-allocation-balancing-financial-risk","balanced-asset-allocation","the-allocator-s-edge","beyond-diversification","the-bond-buyer-s-primer","value-averaging"]},
+    {n:'Institutional',k:["pioneering-portfolio-management","capital-allocation","quality-investing","the-portable-mba-in-investment","capital-ideas","capital-ideas-evolving"]},
+    {n:'Tail Risk & Cycles',k:["the-dao-of-capital","expected-returns","asset-rotation-the-demise-of-modern-portfolio-theory","lifecycle-investing","shareholder-yield","global-asset-allocation"]},
+    {n:'Quantitative & Academic',k:["quantitative-momentum","portfolio-selection-efficient-diversification-of-investments","active-portfolio-management","asset-management-a-systematic-approach-to-factor-investing","strategic-risk-management-designing-portfolios-and-managing-risk","dynamic-asset-allocation","portfolio-construction-and-analytics","risk-return-analysis-the-theory-and-practice-of-rational-investing","quantitative-equity-portfolio-management","risk-reward","investimentos"]},
+    {n:'Also in This Section',k:["global-investing","investing-amid-low-expected-returns"]},
+  ],
+  9: [
+    {n:'Start Here',k:["financial-statements-a-step-by-step-guide","financial-intelligence"]},
+    {n:'Buffett & Graham',k:["the-interpretation-of-financial-statements","warren-buffett-and-the-interpretation-of-financial-statements"]},
+    {n:'Advanced & Forensic',k:["accounting-for-value","easy-prey-investors"]},
+  ],
+  10: [
+    {n:'Start Here',k:["the-intelligent-investor","one-up-on-wall-street","the-little-book-that-still-beats-the-market","the-little-book-of-value-investing","the-little-book-that-builds-wealth"]},
+    {n:'Buffett & Munger',k:["the-essays-of-warren-buffett","the-warren-buffett-way","buffettology","the-new-buffettology","the-essential-buffett","how-to-pick-stocks-like-warren-buffett"]},
+    {n:'Value Core',k:["margin-of-safety","common-stocks-and-uncommon-profits","you-can-be-a-stock-market-genius","the-dhandho-investor","the-education-of-a-value-investor","value-investing","the-little-book-of-sideways-markets"]},
+    {n:'Growth & CANSLIM',k:["100-baggers","how-to-make-money-in-stocks","beating-the-street","the-outsiders","paths-to-wealth-through-common-stocks","the-future-for-investors","the-little-book-of-bull-moves-in-bear-markets","rule-breaker-investing","super-sectors","stocks-for-the-long-run"]},
+    {n:'Contrarian & Special',k:["contrarian-investment-strategies","being-right-or-making-money","stan-weinstein-s-secrets-for-profiting-in-bull-and-bear-markets","capital-returns-investing-through-the-capital-cycle","distress-investing","the-making-of-a-permabear","capital-account","the-long-good-buy-analysing-cycles-in-markets","efficiently-inefficient"]},
+    {n:'Strategy & Moats',k:["competition-demystified","good-strategy-bad-strategy","expectations-investing","quality-of-earnings","the-only-three-questions-that-count","rational-investing-in-irrational-times","more-than-you-know"]},
+    {n:'Valuation & Academic',k:["security-analysis","investment-valuation","the-theory-of-investment-value","narrative-and-numbers","damodaran-on-valuation","investment-valuation-tools-and-techniques","little-book-of-valuation","valuation-measuring-and-managing-the-value-of-companies","common-stocks-as-long-term-investments","triumph-of-the-optimists-101-years-of-global-investment-returns","best-practices-for-equity-research-analysts","how-inflation-swindles-the-equity-investor"]},
+  ],
+  11: [
+    {n:'Why Bonds Matter',k:["the-bond-king","charlie-d-the-story-of-the-legendary-bond-trader"]},
+    {n:'Bond Foundations',k:["the-bond-book","investing-in-fixed-income-securities-understanding-the-bond-market","interest-rate-markets-a-practical-approach-to-fixed-income"]},
+    {n:'Core Fixed Income',k:["the-handbook-of-fixed-income-securities","bond-markets","fixed-income-securities-tools-for-today-s-markets","fixed-income-markets-and-their-derivatives"]},
+    {n:'Strategy & Practice',k:["the-strategic-bond-investor","fixed-income-strategy-a-practitioner-s-guide-to-riding-the-curve","systematic-fixed-income","systematic-fixed-income-an-investor-s-guide"]},
+    {n:'Trading & Relative Value',k:["fixed-income-trading-and-risk-management-the-complete-guide","fixed-income-relative-value-analysis","trading-the-fixed-income-inflation-and-credit-markets","sofr-futures-and-options"]},
+    {n:'Credit & Leverage',k:["credit-risk-management-in-and-out-of-the-financial-crisis","leveraged-finance-concepts-methods-and-trading","a-pragmatist-s-guide-to-leveraged-finance"]},
+    {n:'Advanced & Specialized',k:["the-advanced-fixed-income-and-derivatives-management-guide","advanced-bond-portfolio-management","trading-fixed-income-and-fx-in-emerging-markets","the-handbook-of-european-fixed-income-securities"]},
+  ],
+  12: [
+    {n:'Motivation & Big Picture',k:["the-millionaire-real-estate-investor","zillow-talk","the-rent-is-too-damn-high","confessions-of-a-real-estate-entrepreneur"]},
+    {n:'Cycles & History',k:["the-18-6-year-real-estate-cycle","one-hundred-years-of-land-values-in-chicago","the-long-wave-in-real-estate","the-depression-of-2008","timeless-wealth-real-estate-through-the-ages"]},
+    {n:'Land Economics',k:["the-power-in-the-land","ricardo-s-law","land-is-a-big-deal","order-without-design"]},
+    {n:'Cash Flow & Analysis',k:["what-every-real-estate-investor-needs-to-know-about-cash-flow","the-real-estate-game","real-estate-finance-investments","commercial-real-estate-analysis-investments"]},
+    {n:'Residential Investing',k:["the-book-on-rental-property-investing","the-house-hacking-strategy","nolo-s-essential-guide-to-buying-your-first-home","the-book-on-investing-in-real-estate-with-no-and-low-money-down","nothing-down-for-the-2000s"]},
+    {n:'REITs & Passive',k:["investing-in-reits","the-intelligent-reit-investor"]},
+    {n:'Scaling & Creative',k:["from-0-to-130-properties-in-3-5-years","the-turnkey-revolution","how-to-create-life-time-cash-flow-real-estate","the-real-estate-wholesaling-bible","mastering-the-art-of-commercial-real-estate-investing"]},
+    {n:'Tax Strategy',k:["the-book-on-tax-strategies-for-the-savvy-real-estate-investor"]},
+  ],
+  13: [
+    {n:'Narrative & Context',k:["the-prize","the-world-for-sale","merchants-of-grain","material-world"]},
+    {n:'Commodity Investing',k:["hot-commodities","commodity-supercycles","tomorrow-s-gold","commodities-for-dummies","commodity-conversations"]},
+    {n:'Gold & Precious Metals',k:["the-golden-constant-the-english-and-american-experience-1560-2007","the-power-of-gold","the-new-case-for-gold","gold-the-once-and-future-money","the-triumph-of-gold","gold-wars","a-pocketbook-of-gold","newton-and-the-counterfeiter"]},
+    {n:'Energy Transition',k:["the-new-map","volt-rush","cobalt-red"]},
+    {n:'Trading Commodities',k:["a-trader-s-first-book-on-commodities","salt-sugar-fat"]},
+  ],
+  14: [
+    {n:'Currency Big Picture',k:["trade-wars-are-class-wars","princes-of-the-yen","the-fall-of-the-euro"]},
+    {n:'Dollar & Fundamentals',k:["making-sense-of-the-dollar","financial-markets-and-institutions-a-european-perspective"]},
+    {n:'FX Trading',k:["the-art-of-currency-trading","currency-strategy-the-practitioner-s-guide-to-currency-investing-hedging-and-for","inside-the-currency-market-mechanics-valuation-and-strategies"]},
+    {n:'Advanced FX',k:["foreign-exchange-practical-asset-pricing-and-macroeconomic-theory","foreign-exchange"]},
+  ],
+  15: [
+    {n:'Accessible Start',k:["options-made-easy","the-options-playbook","options-for-the-stock-investor"]},
+    {n:'Core Theory',k:["option-volatility-and-pricing","options-as-a-strategic-investment","trading-options-greeks"]},
+    {n:'Volatility Deep Dive',k:["volatility-trading","the-volatility-edge-in-options-trading","the-volatility-surface","the-volatility-smile","the-volatility-birman"]},
+    {n:'Advanced Trading',k:["positional-option-trading","dynamic-hedging"]},
+    {n:'Market Structure',k:["trades-quotes-and-prices-financial-markets-under-the-microscope","op-es-futuros-e-outros-derivativos"]},
+  ],
+  16: [
+    {n:'Money Context',k:["the-lords-of-easy-money","broken-money"]},
+    {n:'Crypto Specifics',k:["cryptoassets","the-blocksize-war"]},
+  ],
+  17: [
+    {n:'Trading Legends',k:["reminiscences-of-a-stock-operator","market-wizards","the-new-market-wizards","hedge-fund-market-wizards","unknown-market-wizards","the-little-book-of-market-wizards-lessons-from-the-greatest-traders","winning-methods-of-the-market-wizards","the-man-who-solved-the-market","no-bull-my-life-in-and-out-of-markets","education-of-a-speculator"]},
+    {n:'Trading Foundations',k:["trade-your-way-to-financial-freedom","the-battle-for-investment-survival","come-into-my-trading-room","the-playbook","mastering-the-trade","the-little-book-of-trading","stock-market-wizards"]},
+    {n:'Trend & Momentum',k:["trend-following","trend-commandments","following-the-trend","dual-momentum-investing","the-complete-turtle-trader","stocks-on-the-move","momentum-masters","trading-momentum","learn-to-trade-momentum-stocks"]},
+    {n:'Systematic Trading',k:["trading-systems-and-methods","statistically-sound-machine-learning-for-algorithmic-trading","trading-evolved","the-encyclopedia-of-trading-strategies","evidence-based-technical-analysis","quantitative-technical-analysis"]},
+    {n:'Money Management',k:["the-mathematics-of-money-management","portfolio-management-formulas-mathematical-trading-methods-for-the-futures-optio","the-handbook-of-portfolio-mathematics-formulas-for-optimal-allocation-and-levera","the-new-money-management-a-framework-for-asset-allocation"]},
+    {n:'Intermarket & Macro',k:["trading-with-intermarket-analysis","intermarket-analysis-profiting-from-global-market-relationships","global-macro-trading","the-all-weather-trader","trade-stocks-and-commodities-with-the-insiders"]},
+    {n:'Classic Technical Analysis',k:["technical-analysis-of-the-financial-markets","technical-analysis-of-the-futures-markets","technical-analysis-of-stock-trends","technical-analysis","the-visual-investor","the-art-and-science-of-technical-analysis","technical-analysis-explained","encyclopedia-of-chart-patterns","japanese-candlestick-charting-techniques","bollinger-on-bollinger-bands","point-and-figure-charting"]},
+    {n:'Wyckoff & Dow',k:["charting-the-stock-market-the-wyckoff-method","the-wycoff-methodology-in-depth","metodologia-wyckoff","dow-theory-unplugged","a-complete-guide-to-volume-price-analysis","trades-about-to-happen"]},
+    {n:'Elliott & Fibonacci',k:["o-principio-da-onda-de-elliott","rn-elliott-nature-law"]},
+    {n:'Oscillators & Cycles',k:["the-complete-rsi-book","momentum-direction-and-divergence","momentum-explained","the-profit-magic-of-stock-transaction-timing","mesa-and-trading-market-cycles","the-new-science-of-technical-analysis","demark-indicators","the-power-of-oscillator-cycle-combinations","new-concepts-in-technical-trading-systems","cycle-analytics-for-traders","dynamic-trading","unlocking-wealth-secret-to-market-timing"]},
+    {n:'Advanced Indicators',k:["technical-analysis-for-the-trading-professional","rocket-science-for-traders","cybernetic-analysis-for-stocks-and-futures","the-encyclopedia-of-technical-market-indicators","technical-analysis-using-multiple-timeframes","market-momentum-theory-and-practice","the-complete-guide-to-market-breadth-indicators","dinapoli-levels"]},
+    {n:'Day & Swing Trading',k:["the-master-swing-trader","tools-and-tactics-for-the-master-daytrader","longterm-secrets-to-short-term-trading","secrets-of-a-pivot-boss","street-smarts-high-probability-short-term-trading-strategies","professional-trading-techniques","the-taylor-trading-technique"]},
+    {n:'Short Selling & Specialty',k:["the-art-of-short-selling","diary-of-a-professional-commodity-trader","winning-on-wall-street","a-complete-guide-to-the-futures-markets"]},
+    {n:'Classic Speculation',k:["the-abc-of-stock-speculation","truth-of-the-stock-tape","45-years-of-wall-street","new-stock-trend-detector","how-to-make-profits-trading-in-commodities","the-art-of-speculation","speculation-as-a-fine-art","wall-street-the-second-las-vegas"]},
+    {n:'Trader Memoirs',k:["how-i-trade-and-invest-in-stocks","michael-s-jenkins-complete-stock-market-trading-and-forecasting-course","trader-vic-methods-of-a-wall-street-master","trading-techniques-one-day-workshop-manual-2008","a-disciplina-busca-por-menos","a-ciencia-de-ficar-rico","fa-a-fortuna-com-a-es"]},
+    {n:'Also in This Section',k:["how-i-made-one-million-dollars-trading-commodities-last-year","day-trading-with-short-term-price-patterns-and-opening-range-breakout","short-term-trading-strategies-that-work","the-new-technical-trader","how-to-trade-in-stocks","an-introduction-to-t-theory","technical-analysis-power-tools-for-active-investors","technical-traders-guide-to-computer-analysis-of-the-futures-markets","trade-like-a-stock-market-wizard","volume-profile-the-insider-s-guide-to-trading","technical-analysis-from-a-to-z","stock-market-logic","sentiment-indicators","beyond-technical-analysis","new-market-timing-techniques","modern-technical-analysis-new-innovative-indicators-in-python","relative-strength-and-stock-market-timing","sector-investing"]},
+  ],
+  18: [
+    {n:'Core Psychology',k:["trading-in-the-zone","best-loser-wins"]},
+    {n:'Building Habits',k:["trading-psychology-2-0","the-daily-trading-coach"]},
+    {n:'Behavior & Bias',k:["panic-proof-investing","investment-psychology-explained","forecasting-financial-markets"]},
+    {n:'International & Applied',k:["se-afastando-da-manada","comprar-ou-vender","trade-to-win","beyond-greed-and-fear"]},
+  ],
+  19: [
+    {n:'Grand Cycles',k:["the-fourth-turning","generations","secular-cycles","the-great-wave-price-revolutions","the-long-wave-cycle"]},
+    {n:'Empires & Civilizations',k:["the-fate-of-empires-and-search-for-survival","war-and-peace-and-war","historical-dynamics-why-states-rise-and-fall","ages-of-discord","end-times-elites-counter-elites-and-the-path-of-political-disintegration","the-muqaddimah","a-study-of-history-abridged","the-new-science","the-story-of-civilization","the-long-twentieth-century-money-power-and-the-origins-of-our-times"]},
+    {n:'Economic Cycles',k:["technological-revolutions-and-financial-capital","business-cycles-a-theoretical-historical-and-statistical-analysis","business-cycles-history-theory-and-investment-reality","measuring-business-cycles","a-theory-of-economic-history","long-waves-of-capitalist-development","as-time-goes-by","long-wave-rhythms-in-economic-development-and-political-behavior","building-cycles-and-the-theory-of-investment"]},
+    {n:'Liquidity & Markets',k:["capital-wars-the-rise-of-global-liquidity","anatomy-of-the-bear-lessons-from-wall-street-s-four-great-bottoms","mastering-the-market-cycle","unexpected-returns"]},
+    {n:'Cycle Trading',k:["mastering-hurst-cycle-analysis","stock-trader-s-almanac","fibonacci-trading","walter-bressert-cycles","cycles-course","merriman-on-market-cycles-the-basics","the-art-of-timing","the-k-wave"]},
+    {n:'Social & Cultural Cycles',k:["socionomics","cycles-the-mysterious-forces-that-trigger-events","the-cycles-of-american-history","pendulum","rhythmanalysis-space-time-and-everyday-life","an-essay-on-the-principle-of-population","benner-s-prophecies-of-future-ups-and-downs-in-prices"]},
+    {n:'Also in This Section',k:["cyclic-analysis-a-dynamic-approach-to-technical-analysis","channels-cycles-a-tribute-to-j-m-hurst","future-trends-from-past-cycles","the-cycle-trading-pattern-manual","the-handbook-of-commodity-cycles","cycles-of-profit","patterns-for-profit"]},
+  ],
+  20: [
+    {n:'Quant Stories',k:["the-quants","flash-boys","dark-pools","my-life-as-a-quant","the-hour-between-dog-and-wolf","fortune-s-formula","the-theory-that-would-not-die"]},
+    {n:'Probability & Intuition',k:["naked-statistics","the-drunkard-s-walk","innumeracy","how-not-to-be-wrong-the-power-of-mathematical-thinking","the-signal-and-the-noise","the-art-of-statistics","how-to-measure-anything","superforecasting","what-s-luck-got-to-do-with-it"]},
+    {n:'Gambling & Kelly',k:["beat-the-dealer","beat-the-market","the-mathematics-of-gambling","elementary-probability","the-kelly-capital-growth-investment-criterion","a-new-interpretation-of-information-rate","optimal-gambling-systems","the-mathematics-of-games-and-gambling","calculated-bets","the-mathematics-of-poker","games-gambling-and-probability","book-on-games-of-chance","the-doctrine-of-chances","louis-bachelier-s-theory-of-speculation"]},
+    {n:'Market Microstructure',k:["trading-and-exchanges","market-microstructure-theory","market-making-and-the-changing-structure-of-the-securities-industry","the-random-character-of-stock-market-prices"]},
+    {n:'Practical Algo Trading',k:["quantitative-trading","algorithmic-trading","machine-trading","inside-the-black-box","systematic-trading","leveraged-trading","algorithmic-and-high-frequency-trading","generative-ai-for-trading"]},
+    {n:'Statistics & Time Series',k:["an-introduction-to-statistical-learning","statistical-rethinking","forecasting-principles-and-practice","time-series-analysis","time-series-analysis-by-state-space-methods","elements-of-information-theory"]},
+    {n:'Signal Processing',k:["financial-signal-processing-and-machine-learning","the-scientist-and-engineer-s-guide-to-digital-signal-processing","kalman-and-bayesian-filters-in-python","singular-spectrum-analysis-a-new-tool-in-time-series-analysis","a-wavelet-tour-of-signal-processing","hilbert-huang-transform-and-its-applications","spectral-analysis-and-time-series"]},
+    {n:'Machine Learning',k:["advances-in-financial-machine-learning","machine-learning-for-asset-managers"]},
+    {n:'Game & Probability Theory',k:["probability-and-finance-it-s-only-a-game","game-theoretic-foundations-for-probability-and-finance","probability-for-finance","probability-with-martingales"]},
+    {n:'Stochastic Calculus',k:["stochastic-calculus-for-finance-i-the-binomial-asset-pricing-model","stochastic-calculus-for-finance-ii-continuous-time-models","financial-calculus-an-introduction-to-derivative-pricing","the-concepts-and-practice-of-mathematical-finance","methods-of-mathematical-finance","arbitrage-theory-in-continuous-time","essentials-of-stochastic-finance","foundations-of-modern-probability","universal-portfolios"]},
+    {n:'Quant Reference',k:["paul-wilmott-introduces-quantitative-finance","frequently-asked-questions-in-quantitative-finance","quantitative-finance-for-dummies","models-behaving-badly","the-money-formula","the-problem-of-twelve-when-a-few-financial-institutions-control-everything"]},
+    {n:'Also in This Section',k:["ars-conjectandi","the-evaluation-and-optimization-of-trading-strategies"]},
+  ],
+  21: [
+    {n:'Why Risk Matters',k:["the-zurich-axioms","the-art-of-execution"]},
+    {n:'Skill vs Luck',k:["the-success-equation","the-poker-face-of-wall-street","risk-uncertainty-and-profit"]},
+    {n:'Position Sizing Core',k:["way-of-the-turtle","definitive-guide-to-position-sizing-strategies","super-trader"]},
+    {n:'Systematic Risk Models',k:["the-leverage-space-trading-model","the-universal-principles-of-successful-trading","value-at-risk"]},
+    {n:'Tail Risk & Chaos',k:["red-blooded-risk","chaos-kings","safe-haven","the-missing-billionaires","reducing-the-risks-of-black-swans"]},
+    {n:'Professional Reference',k:["financial-risk-manager-handbook","risk-management-and-financial-institutions","distressed-debt-analysis"]},
+  ],
+  22: [
+    {n:'World Order',k:["the-changing-world-order","why-nations-fail","the-rise-and-fall-of-great-powers","world-order","the-narrow-corridor"]},
+    {n:'Soros & Dalio',k:["principles","the-alchemy-of-finance","the-new-paradigm-for-financial-markets","the-fund-ray-dalio"]},
+    {n:'Geopolitical Investing',k:["geopolitical-alpha","global-macro-edge","applied-financial-macroeconomics-and-investment-strategy","the-rise-of-carry"]},
+    {n:'Resources & Technology',k:["chip-war","energy-and-civilization","how-the-world-really-works","the-price-of-tomorrow","the-innovator-s-dilemma"]},
+    {n:'Geography & Power',k:["the-accidental-superpower","the-end-of-the-world-is-just-the-beginning","prisoners-of-geography","the-sovereign-individual","destined-for-war-can-america-and-china-escape-thucydides-s-trap"]},
+    {n:'Money & Systems',k:["the-volatility-machine","monetary-regimes-and-inflation","how-countries-go-broke","the-money-plot","the-origin-of-wealth","the-mystery-of-capital"]},
+    {n:'Regional Deep Dives',k:["the-middle-east","diplomacy","on-china","lawrence-in-arabia","the-hidden-hand"]},
+    {n:'Economic Realities',k:["economic-facts-and-fallacies","the-housing-boom-and-bust","the-myth-of-capitalism","the-man-who-broke-capitalism","the-coming-generational-storm"]},
+    {n:'Adventurer Perspectives',k:["investment-biker","street-smarts","confessions-of-an-economic-hitman"]},
+    {n:'Big Picture Narratives',k:["the-rational-optimist","the-levelling","the-great-rupture","signals-the-breakdown-of-the-social-contract","macroeconomia","kaput-the-end-of-the-german-miracle","safe-passage-the-transition-from-british-to-american-hegemony","technological-revolutions-and-financial-capital"]},
+    {n:'Statecraft & War',k:["leadership-six-studies-in-world-strategy","treasury-s-war","the-economic-weapon","mutiny","the-dictator-s-handbook"]},
+    {n:'Also in This Section',k:["the-great-rebalancing","avoiding-the-fall"]},
+  ],
+  23: [
+    {n:'Accessible Overview',k:["economic-indicators-for-dummies","the-wall-street-journal-guide-to-the-50-economic-indicators-that-really-matter"]},
+    {n:'Practitioner Depth',k:["the-trader-s-guide-to-key-economic-indicators","guide-to-economic-indicators-making-sense-of-economics"]},
+    {n:'Reference',k:["the-economic-indicator-handbook"]},
+  ],
+  24: [
+    {n:'Greatest Hits',k:["more-money-than-god","liar-s-poker","a-man-for-all-markets"]},
+    {n:'Money Through History',k:["the-ascent-of-money","the-house-of-rothschild","titan-the-life-of-john-d-rockefeller-sr","the-house-of-morgan","the-life-and-legend-of-jay-gould"]},
+    {n:'Legendary Traders',k:["jesse-livermore-world-s-greatest-stock-trader","inside-the-house-of-money","the-snowball-warren-buffett-and-the-business-of-life","the-raven-of-zurich-the-memoirs-of-felix-somary","the-man-who-made-wall-street"]},
+    {n:'Industry Exposés',k:["barbarians-at-the-gate","the-predators-ball","house-of-cards","fiasco","financial-shenanigans"]},
+    {n:'PE & Hedge Funds',k:["king-of-capital","plunder-private-equity-s-plan-to-pillage-america","hedgehogging","the-buy-side","the-intelligent-fund-investor"]},
+    {n:'Wit & Wisdom',k:["where-are-the-customers-yachts","the-devil-s-financial-dictionary","supermoney","the-money-game","the-economic-organization-of-a-pow-camp"]},
+    {n:'Modern Stories',k:["trillions","dead-company-walking","the-next-perfect-trade","traders-guns-money","the-rise-of-cary","paper-promises","the-biggest-con-how-the-government-is","fooling-some-of-the-people-all-of-the-time"]},
+    {n:'Adjacent Reads',k:["the-outsiders-eight-unconventional-ceos-and-their-radically-rational-blueprint-f","the-everything-store","dark-money","clear-thinking","the-man-from-the-future","the-physics-of-wall-street","economist-on-wall-street","lords-of-finance"]},
+    {n:'Also in This Section',k:["the-robber-barons","the-alpha-masters"]},
+  ],
+  25: [
+    {n:'Foundations',k:["corporate-finance","principles-of-corporate-finance","applied-corporate-finance"]},
+    {n:'Banking & Credentials',k:["investment-banking","the-principles-of-banking","kaplan-schweser-cfa-level-1","social-security-101"]},
+    {n:'M&A',k:["mergers-and-acquisitions-from-a-to-z","the-art-of-m-a","mergers-acquisitions-and-other-restructuring-activities"]},
+    {n:'Private Markets',k:["the-masters-of-private-equity-and-venture-capital","venture-deals","private-equity-at-work","private-debt-opportunities-in-corporate-direct-lending"]},
+    {n:'Alternatives & Frontiers',k:["alternative-investments-caia-level-i","the-handbook-of-alternative-assets","the-frontier-market-guide","frontier-market-equity-investing","the-guide-to-frontier-markets"]},
+  ],
+  26: [
+    {n:'Big History',k:["guns-germs-and-steel","sapiens","the-origin-of-species","1177-b-c-the-year-civilization-collapsed"]},
+    {n:'Power & Strategy',k:["the-48-laws-of-power","the-33-strategies-of-war","the-art-of-war","the-prince","seven-powers"]},
+    {n:'Game Theory',k:["game-theory-the-theory-of-games-and-economic-behavior","thinking-strategically","the-art-of-strategy","teoria-dos-jogos","game-theory-for-applied-economists","the-evolution-of-cooperation"]},
+    {n:'Political Philosophy',k:["the-republic","leviathan","the-federalist-papers","nicomachean-ethics","pens-233-es","politics","democracy-in-america","rules-for-radicals"]},
+    {n:'Rise & Fall',k:["the-clash-of-civilizations-and-the-remaking-of-world-order","the-decline-of-the-west","civilization-the-west-and-the-rest","the-war-of-the-world","the-storm-before-the-storm-the-beginning-of-the-end-of-the-roman-republic","between-two-ages-america-s-role-in-the-technetronic-era","the-death-of-the-west","notes-on-the-death-of-culture"]},
+    {n:'Inequality & Society',k:["the-great-leveler","poverty-by-america","evicted","bowling-alone","the-two-income-trap","old-money-the-mythology-of-wealth-in-america","three-felonies-a-day"]},
+    {n:'Power Structures',k:["the-power-broker","the-power-law","power-why-some-people-have-it-and-others-don-t","owning-the-earth-the-transforming-history-of-land-ownership","the-origins-of-political-order","as-gods-among-men-a-history-of-the-rich-in-the-west"]},
+    {n:'Success & Innovation',k:["in-search-of-excellence","outliers","the-law-of-success","the-war-of-art","the-five-experiments"]},
+    {n:'History & Culture',k:["a-people-s-history-of-the-united-states","the-spirit-of-venice","war-is-a-racket","a-modern-history-of-japan-from-tokugawa-times-to-the-present","why-don-t-we-learn-from-history","einstein-s-mistakes","the-wisdom-of-crowds"]},
+    {n:'Also in This Section',k:["the-presidents","the-american-presidents","rating-the-presidents","the-presidents-fact-book","dead-presidents","abundance","to-the-finland-station","imperialism-a-study","the-true-believer","mastery","the-art-of-seduction","barbarians-to-bureaucrats","empire-the-rise-and-demise-of-the-british-world-order-and-the-lessons-for-global"]},
+  ],
+  27: [
+    {n:'Stoic Foundations',k:["meditations","letters-from-a-stoic","man-s-search-for-meaning"]},
+    {n:'Mindset & Habits',k:["atomic-habits","grit","the-7-habits-of-highly-effective-people","the-power-of-now","the-four-agreements"]},
+    {n:'Influence & People',k:["how-to-win-friends-and-influence-people","influence-the-psychology-of-persuasion","the-charisma-myth","getting-along-how-to-work-with-anyone"]},
+    {n:'Ambition & Wealth',k:["think-and-grow-rich","zero-to-one","the-4-hour-workweek","how-to-get-filthy-rich-in-rising-asia"]},
+    {n:'Mental Edge',k:["177-mental-toughness-secrets-of-the-world-class","moonwalking-with-einstein","the-memory-book","the-art-of-memory","the-singularity-is-near","the-singularity-is-nearer"]},
+  ],
+  28: [
+    {n:'Training First',k:["the-muscle-strength-pyramid-training"]},
+    {n:'Then Nutrition',k:["the-muscle-strength-pyramid-nutrition"]},
+  ],
+  29: [
+    {n:'Courses',k:["course-smc"]},
+  ],
+};
+
+
+  // Build phase buttons and overlays for each section
+  document.querySelectorAll('.section').forEach(function(sec) {
+    var numEl = sec.querySelector('.section-num');
+    var sn = numEl ? parseInt(numEl.textContent, 10) : 0;
+    var phases = PHASES[sn];
+    if (!phases || !phases.length) return;
+
+    // Add "Reading Order" button to section header
+    var top = sec.querySelector('.section-header-top');
+    if (!top) return;
+    var btn = document.createElement('button');
+    btn.className = 'phase-btn';
+    btn.textContent = 'Reading Order';
+    btn.dataset.section = sn;
+    top.insertBefore(btn, top.querySelector('.section-progress'));
+
+    // Create overlay
+    var overlay = document.createElement('div');
+    overlay.className = 'phase-overlay';
+    overlay.id = 'phases-' + sn;
+    sec.querySelector('.section-header').appendChild(overlay);
+
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var isOpen = overlay.classList.contains('open');
+      // Close all other overlays
+      document.querySelectorAll('.phase-overlay.open').forEach(function(o) {
+        o.classList.remove('open');
+        var b = o.closest('.section').querySelector('.phase-btn');
+        if (b) b.classList.remove('active');
+      });
+      if (!isOpen) {
+        overlay.classList.add('open');
+        btn.classList.add('active');
+        renderPhases(sn);
+      }
+    });
+  });
+
+  function renderPhases(sn) {
+    var overlay = document.getElementById('phases-' + sn);
+    if (!overlay) return;
+    var phases = PHASES[sn];
+    if (!phases) return;
+    var read = getRead();
+
+    // Build a map of bookKey -> li element for this section
+    var sec = overlay.closest('.section');
+    var liMap = {};
+    sec.querySelectorAll('.book-list li').forEach(function(li) {
+      var key = li.dataset.bookKey || bookKey(li);
+      liMap[key] = li;
+    });
+
+    var html = '';
+    var globalIdx = 0;
+    phases.forEach(function(phase, pi) {
+      var phaseRead = 0;
+      var phaseTotal = phase.k.length;
+      var booksHtml = '';
+
+      phase.k.forEach(function(key) {
+        globalIdx++;
+        var li = liMap[key];
+        var isRead = !!read[key];
+        if (isRead) phaseRead++;
+        var isStarred = li && li.classList.contains('starred');
+
+        // Get title and author from the original li
+        var title = key;
+        var author = '';
+        if (li) {
+          var clone = li.cloneNode(true);
+          clone.querySelectorAll('.author, .note, .star, .book-desc-panel').forEach(function(el) { el.remove(); });
+          title = clone.textContent.trim();
+          var aEl = li.querySelector('.author');
+          if (aEl) author = aEl.textContent.trim();
+        }
+
+        booksHtml += '<li class="' + (isRead ? 'read' : '') + '">'
+          + '<span class="phase-order-num">' + globalIdx + '</span>'
+          + (isStarred ? '<span class="star">&#9733;</span>' : '')
+          + title
+          + (author ? ' <span class="author">' + author + '</span>' : '')
+          + '</li>';
+      });
+
+      var pct = phaseTotal ? Math.round(phaseRead / phaseTotal * 100) : 0;
+      html += '<div class="phase-group">'
+        + '<div class="phase-label">'
+        + '<span class="phase-num">' + (pi + 1) + '</span>'
+        + '<span class="phase-name">' + phase.n + '</span>'
+        + '<span class="phase-progress">' + phaseRead + '/' + phaseTotal + (pct === 100 ? ' ✓' : '') + '</span>'
+        + '</div>'
+        + '<ul class="phase-books">' + booksHtml + '</ul>'
+        + '</div>';
+    });
+
+    overlay.innerHTML = html;
+  }
+
 
   function render() {
     var read = getRead();
