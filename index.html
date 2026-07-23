@@ -2335,7 +2335,6 @@
     var numEl = sec.querySelector('.section-num');
     var sn = numEl ? parseInt(numEl.textContent, 10) : 0;
     var phases = PHASES[sn];
-    if (!phases || !phases.length) return;
 
     // Add "Reading Order" button to section header
     var top = sec.querySelector('.section-header-top');
@@ -2374,8 +2373,7 @@
   function renderPhases(sn) {
     var overlay = document.getElementById('phases-' + sn);
     if (!overlay) return;
-    var phases = PHASES[sn];
-    if (!phases) return;
+    var phases = PHASES[sn] || [];
     var read = getRead();
 
     // Build a map of bookKey -> li element for this section
@@ -2386,9 +2384,28 @@
       liMap[key] = li;
     });
 
+    // Collect all keys already in PHASES for this section
+    var phasedKeys = {};
+    phases.forEach(function(phase) {
+      phase.k.forEach(function(key) { phasedKeys[key] = true; });
+    });
+
+    // Find books in the section not yet in any phase
+    var uncategorized = [];
+    sec.querySelectorAll('.book-list li').forEach(function(li) {
+      var key = li.dataset.bookKey || bookKey(li);
+      if (!phasedKeys[key]) uncategorized.push(key);
+    });
+
+    // If there are uncategorized books, add them as a "New Additions" phase
+    var allPhases = phases.slice();
+    if (uncategorized.length) {
+      allPhases.push({n: 'New Additions', k: uncategorized});
+    }
+
     var html = '';
     var globalIdx = 0;
-    phases.forEach(function(phase, pi) {
+    allPhases.forEach(function(phase, pi) {
       var phaseRead = 0;
       var phaseTotal = phase.k.length;
       var booksHtml = '';
