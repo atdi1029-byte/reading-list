@@ -536,6 +536,181 @@
     min-width: 18px;
     font-weight: 700;
   }
+
+  /* ---- Reading Paths ---- */
+  .path-card {
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .path-header {
+    padding: 16px 20px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .path-header:hover { background: rgba(0,0,0,0.02); }
+  .path-icon {
+    font-size: 22px;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--accent-light);
+    border-radius: 50%;
+  }
+  .path-info { flex: 1; }
+  .path-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .path-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+  .path-meta {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .path-stat {
+    text-align: center;
+  }
+  .path-stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .path-stat-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+  }
+  .path-difficulty {
+    font-size: 11px;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-weight: 500;
+  }
+  .path-difficulty.beginner {
+    background: #e8f5e9;
+    color: #2e7d32;
+  }
+  .path-difficulty.intermediate {
+    background: #fff3e0;
+    color: #e65100;
+  }
+  .path-difficulty.advanced {
+    background: #fce4ec;
+    color: #c62828;
+  }
+  .path-body {
+    display: none;
+    padding: 0 20px 16px;
+  }
+  .path-body.open { display: block; }
+  .path-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0ede8;
+    font-size: 14px;
+  }
+  .path-step:last-child { border-bottom: none; }
+  .path-step-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--accent);
+    min-width: 24px;
+    flex-shrink: 0;
+    padding-top: 1px;
+  }
+  .path-step-info { flex: 1; }
+  .path-step-title {
+    font-weight: 500;
+  }
+  .path-step-title .star {
+    color: var(--star);
+    font-size: 13px;
+  }
+  .path-step-title .author {
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 300;
+  }
+  .path-step-why {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 3px;
+    font-style: italic;
+    line-height: 1.4;
+  }
+  .path-step.read .path-step-title {
+    opacity: 0.5;
+    text-decoration: line-through;
+  }
+  .path-step.read .path-step-num::after {
+    content: ' \2713';
+    color: #3a9e4a;
+    font-size: 13px;
+  }
+  .path-progress-bar {
+    height: 4px;
+    background: #eee;
+    border-radius: 2px;
+    overflow: hidden;
+    margin: 12px 0 4px;
+  }
+  .path-progress-bar .fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+  }
+  .path-chevron {
+    font-size: 14px;
+    color: var(--muted);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .path-header.open .path-chevron {
+    transform: rotate(90deg);
+  }
+  .paths-intro {
+    text-align: center;
+    padding: 10px 0 24px;
+  }
+  .paths-intro h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px;
+    margin-bottom: 6px;
+  }
+  .paths-intro p {
+    color: var(--muted);
+    font-size: 14px;
+  }
+  @media (max-width: 600px) {
+    .path-meta { flex-direction: column; gap: 4px; }
+    .path-desc { display: none; }
+    .path-title { font-size: 15px; }
+  }
 </style>
 </head>
 <body>
@@ -570,6 +745,7 @@
     <button class="filter-btn" id="filterUnread" onclick="setFilter('unread')">Unread</button>
     <button class="filter-btn" id="filterRead" onclick="setFilter('read')">Read</button>
     <button class="filter-btn" id="filterStarred" onclick="setFilter('starred')">Must-Read</button>
+    <button class="filter-btn" id="filterPaths" onclick="togglePaths()">Paths</button>
   </div>
   <div class="search-wrap">
     <input type="text" id="searchInput" placeholder="Search 500+ books..." autocomplete="off">
@@ -596,6 +772,8 @@
 </div>
 
 <div class="no-results" id="noResults">No books match your search.</div>
+
+<div id="pathsView" style="display:none;"></div>
 
 <!-- ============================================ -->
 <div class="tier-header t1">Tier 1 — Foundations</div>
@@ -4004,6 +4182,317 @@
     searchTerm = '';
     clearBtn.style.display = 'none';
     render();
+  };
+
+  // ---- Reading Paths ----
+  var PATHS = [
+    {
+      id: 'inflation',
+      icon: '\uD83D\uDD25',
+      title: 'Understanding Inflation',
+      desc: 'From how money works to what happens when it dies',
+      difficulty: 'intermediate',
+      books: [
+        {k:'economics-101', why:'Builds the vocabulary: supply, demand, CPI, money supply'},
+        {k:'a-primer-on-money-banking-and-gold', why:'How money is created and why gold once anchored it'},
+        {k:'the-economics-of-inflation', why:'The academic framework for how inflation spirals'},
+        {k:'when-money-dies', why:'Weimar hyperinflation in terrifying detail'},
+        {k:'dying-of-money', why:'A second hyperinflation case study, different angle'},
+        {k:'the-price-of-time-the-real-story-of-interest', why:'Interest rates as the price of money across centuries'},
+        {k:'the-theory-of-money-and-credit', why:'Mises\'s foundational theory of how money gains and loses value'},
+        {k:'forty-centuries-of-wage-and-price-controls-how-not-to-fight-inflation', why:'4000 years of proof that price controls never fix inflation'},
+      ]
+    },
+    {
+      id: 'crises',
+      icon: '\uD83D\uDCA5',
+      title: 'The Crisis Playbook',
+      desc: 'How financial crises form, break, and repeat across centuries',
+      difficulty: 'intermediate',
+      books: [
+        {k:'a-short-history-of-financial-euphoria', why:'The pattern in 60 pages: euphoria, leverage, crash, amnesia'},
+        {k:'extraordinary-popular-delusions-and-the-madness-of-crowds', why:'Tulips, South Sea, Mississippi -- the original bubble stories'},
+        {k:'manias-panics-and-crashes', why:'Kindleberger\'s anatomy of every crisis stage'},
+        {k:'the-great-crash-1929', why:'Galbraith\'s definitive account of the granddaddy crash'},
+        {k:'lords-of-finance', why:'The four central bankers who fumbled the aftermath'},
+        {k:'big-debt-crises', why:'Dalio\'s template: how debt cycles build and unwind'},
+        {k:'this-time-is-different-eight-centuries-of-financial-folly', why:'800 years of data proving it\'s never different'},
+        {k:'the-big-short', why:'Modern application: the 2008 crisis from the inside'},
+        {k:'when-genius-failed', why:'LTCM: what happens when the smartest guys blow up'},
+        {k:'stabilizing-an-unstable-economy', why:'Minsky explains why stability itself breeds instability'},
+      ]
+    },
+    {
+      id: 'value-investing',
+      icon: '\uD83C\uDFAF',
+      title: 'The Complete Value Investor',
+      desc: 'From Graham\'s principles to modern application',
+      difficulty: 'intermediate',
+      books: [
+        {k:'the-intelligent-investor', why:'The foundation: margin of safety, Mr. Market, defensive investing'},
+        {k:'common-stocks-and-uncommon-profits', why:'Fisher adds growth and scuttlebutt to the value toolkit'},
+        {k:'the-essays-of-warren-buffett', why:'Buffett\'s own words on how he applies Graham + Fisher'},
+        {k:'the-little-book-that-still-beats-the-market', why:'Greenblatt\'s magic formula: simple, mechanical value'},
+        {k:'one-up-on-wall-street', why:'Lynch\'s practical method for finding value in everyday life'},
+        {k:'margin-of-safety', why:'Klarman on risk-first thinking and why most investors fail'},
+        {k:'the-dhandho-investor', why:'Pabrai distills value into "heads I win, tails I don\'t lose much"'},
+        {k:'you-can-be-a-stock-market-genius', why:'Special situations: spinoffs, mergers, restructurings'},
+        {k:'security-analysis', why:'The original Graham & Dodd text -- dense but definitive'},
+        {k:'100-baggers', why:'What makes a stock compound 100x over decades'},
+      ]
+    },
+    {
+      id: 'money-history',
+      icon: '\uD83C\uDFDB\uFE0F',
+      title: 'Money Through the Ages',
+      desc: 'The full arc: from shells to central banks to fiat collapse',
+      difficulty: 'beginner',
+      books: [
+        {k:'can-t-we-just-print-more-money', why:'The simplest starting point for how money actually works'},
+        {k:'the-ascent-of-money', why:'Money\'s evolution from Mesopotamian clay tablets to derivatives'},
+        {k:'debt-the-first-5-000-years', why:'Graeber flips the script: debt came before money, not after'},
+        {k:'a-primer-on-money', why:'Wright Patman\'s congressional primer on money creation'},
+        {k:'layered-money', why:'Money as layers: gold, bank notes, reserves, digital'},
+        {k:'the-creature-from-jekyll-island', why:'The controversial origin story of the Federal Reserve'},
+        {k:'a-monetary-history-of-the-united-states-1867-1960', why:'Friedman & Schwartz: the data-driven history of US money'},
+        {k:'the-end-of-alchemy-money-banking-and-the-future-of-the-global-economy', why:'A former central banker asks: is our monetary system fundamentally broken?'},
+      ]
+    },
+    {
+      id: 'behavioral',
+      icon: '\uD83E\uDDE0',
+      title: 'Your Brain vs. the Market',
+      desc: 'Why smart people make dumb money decisions',
+      difficulty: 'beginner',
+      books: [
+        {k:'the-psychology-of-money', why:'The emotional foundation: wealth is what you don\'t spend'},
+        {k:'thinking-fast-and-slow', why:'System 1 vs System 2: the cognitive machinery behind bad decisions'},
+        {k:'fooled-by-randomness', why:'Taleb on mistaking luck for skill in markets and life'},
+        {k:'what-i-learned-losing-a-million-dollars', why:'The autobiography that distills every mistake into one lesson'},
+        {k:'the-black-swan', why:'The events you can\'t predict are the ones that matter most'},
+        {k:'misbehaving', why:'Thaler proves economists are wrong about how humans decide'},
+        {k:'irrational-exuberance', why:'Shiller explains why entire markets go insane'},
+        {k:'the-little-book-of-behavioral-investing', why:'Direct application: how biases destroy portfolio returns'},
+        {k:'antifragile', why:'The capstone: stop avoiding disorder and learn to benefit from it'},
+      ]
+    },
+    {
+      id: 'empires',
+      icon: '\uD83C\uDFF0',
+      title: 'Rise & Fall of Powers',
+      desc: 'Why nations dominate and then decline -- and what it means for your money',
+      difficulty: 'advanced',
+      books: [
+        {k:'the-lessons-of-history', why:'The Durants compress 5000 years into 100 pages of patterns'},
+        {k:'the-fate-of-empires-and-search-for-survival', why:'Glubb\'s 250-year empire cycle: pioneers to decadence'},
+        {k:'the-rise-and-fall-of-great-powers', why:'Kennedy\'s thesis: imperial overstretch kills every empire'},
+        {k:'why-nations-fail', why:'Institutions, not geography or culture, determine prosperity'},
+        {k:'the-changing-world-order', why:'Dalio\'s data-driven model of empire cycles and what comes next'},
+        {k:'the-fourth-turning', why:'Generational cycles that predict crisis periods'},
+        {k:'guns-germs-and-steel', why:'The deep roots: geography shaped which civilizations dominated'},
+        {k:'secular-cycles', why:'Turchin\'s demographic-structural model: population, inequality, collapse'},
+        {k:'war-and-peace-and-war', why:'The cliodynamics of how empires expand and disintegrate'},
+      ]
+    },
+    {
+      id: 'risk',
+      icon: '\u2696\uFE0F',
+      title: 'Risk & Uncertainty',
+      desc: 'The difference between measurable risk and true uncertainty',
+      difficulty: 'intermediate',
+      books: [
+        {k:'against-the-gods-the-remarkable-story-of-risk', why:'The history of humanity\'s attempt to measure the unknown'},
+        {k:'fooled-by-randomness', why:'Why we systematically mistake noise for signal'},
+        {k:'the-black-swan', why:'Fat tails: the risks models miss are the ones that kill you'},
+        {k:'the-most-important-thing', why:'Howard Marks on risk as the probability of permanent loss'},
+        {k:'thinking-in-bets', why:'Decision quality vs outcome quality -- process over results'},
+        {k:'the-zurich-axioms', why:'12 rules for taking and managing risk like a Swiss banker'},
+        {k:'antifragile', why:'Beyond resilience: how to gain from disorder'},
+        {k:'safe-haven', why:'Spitznagel on tail-risk hedging and portfolio protection'},
+        {k:'skin-in-the-game', why:'Why asymmetric risk exposure corrupts everything'},
+      ]
+    },
+    {
+      id: 'trading-foundations',
+      icon: '\uD83D\uDCC8',
+      title: 'Trading Foundations',
+      desc: 'From market wisdom to technical discipline',
+      difficulty: 'intermediate',
+      books: [
+        {k:'reminiscences-of-a-stock-operator', why:'The immortal trading memoir -- every lesson still applies'},
+        {k:'market-wizards', why:'What top traders actually do, in their own words'},
+        {k:'trading-in-the-zone', why:'The psychology of consistent execution'},
+        {k:'trade-your-way-to-financial-freedom', why:'Van Tharp\'s system-building framework: expectancy, position sizing'},
+        {k:'technical-analysis-of-the-financial-markets', why:'Murphy\'s reference manual for chart reading'},
+        {k:'the-complete-turtle-trader', why:'The experiment that proved trading can be taught'},
+        {k:'trend-following', why:'The case for systematic trend trading with real track records'},
+        {k:'the-art-of-execution', why:'What to do after you buy: managing winners and losers'},
+        {k:'best-loser-wins', why:'The final piece: embracing loss as the path to profit'},
+      ]
+    },
+    {
+      id: 'macro-investing',
+      icon: '\uD83C\uDF0D',
+      title: 'The Global Macro Investor',
+      desc: 'Understanding the world to position your portfolio',
+      difficulty: 'advanced',
+      books: [
+        {k:'the-alchemy-of-finance', why:'Soros\'s reflexivity theory and real-time trading journal'},
+        {k:'big-debt-crises', why:'Dalio\'s template for how debt cycles drive macro outcomes'},
+        {k:'capital-wars-the-rise-of-global-liquidity', why:'Liquidity as the hidden force driving all asset prices'},
+        {k:'the-changing-world-order', why:'Empire cycles, debt cycles, and what comes next'},
+        {k:'the-price-of-time-the-real-story-of-interest', why:'Interest rates as the master variable of global finance'},
+        {k:'trade-wars-are-class-wars', why:'How trade imbalances are really capital flow problems'},
+        {k:'geopolitical-alpha', why:'Translating geopolitics into portfolio positioning'},
+        {k:'mastering-the-market-cycle', why:'Howard Marks on where we stand in the cycle'},
+        {k:'the-rise-of-carry', why:'The carry trade as the dominant force in modern markets'},
+        {k:'how-countries-go-broke', why:'Sovereign debt crises and the endgame for fiat currency'},
+      ]
+    },
+    {
+      id: 'political-economy',
+      icon: '\uD83C\uDFDB\uFE0F',
+      title: 'Political Economy',
+      desc: 'How politics and economics intertwine and shape markets',
+      difficulty: 'intermediate',
+      books: [
+        {k:'economics-in-one-lesson', why:'Hazlitt\'s broken window: every policy has unseen costs'},
+        {k:'free-to-choose', why:'Friedman\'s case for free markets and limited government'},
+        {k:'the-road-to-serfdom', why:'Hayek warns where central planning leads'},
+        {k:'capitalism-and-freedom', why:'Friedman connects economic freedom to political freedom'},
+        {k:'capital-in-the-twenty-first-century', why:'Piketty\'s counter: capitalism concentrates wealth by default'},
+        {k:'why-nations-fail', why:'Extractive vs inclusive institutions -- the core framework'},
+        {k:'23-things-they-don-t-tell-you-about-capitalism', why:'Chang challenges free-market orthodoxy point by point'},
+        {k:'the-narrow-corridor', why:'The delicate balance between state and society'},
+        {k:'the-dictator-s-handbook', why:'Who really controls power and how they keep it'},
+      ]
+    },
+  ];
+
+  // Build a lookup: bookKey -> {title, author, starred} from all book-list lis
+  var allBookMap = {};
+  document.querySelectorAll('.book-list li').forEach(function(li) {
+    var key = li.dataset.bookKey || bookKey(li);
+    var clone = li.cloneNode(true);
+    clone.querySelectorAll('.author, .note, .star, .book-desc-panel')
+      .forEach(function(el) { el.remove(); });
+    var title = clone.textContent.trim();
+    var aEl = li.querySelector('.author');
+    var author = aEl ? aEl.textContent.trim() : '';
+    allBookMap[key] = {
+      title: title,
+      author: author,
+      starred: li.classList.contains('starred')
+    };
+  });
+
+  var pathsVisible = false;
+
+  window.togglePaths = function() {
+    pathsVisible = !pathsVisible;
+    var btn = document.getElementById('filterPaths');
+    var view = document.getElementById('pathsView');
+    var container = document.querySelector('.container');
+
+    // Toggle visibility of normal content
+    var normalEls = container.querySelectorAll(
+      '.tier-header, .tier-desc, .section, .footer'
+    );
+    var legend = container.querySelector('.legend');
+    var recPanel = document.getElementById('recPanel');
+
+    if (pathsVisible) {
+      btn.classList.add('active');
+      view.style.display = 'block';
+      normalEls.forEach(function(el) { el.style.display = 'none'; });
+      if (legend) legend.style.display = 'none';
+      if (recPanel) recPanel.style.display = 'none';
+      renderPaths();
+    } else {
+      btn.classList.remove('active');
+      view.style.display = 'none';
+      normalEls.forEach(function(el) { el.style.display = ''; });
+      if (legend) legend.style.display = '';
+      if (recPanel) recPanel.style.display = '';
+      render();
+    }
+  };
+
+  function renderPaths() {
+    var read = getRead();
+    var html = '<div class="paths-intro">'
+      + '<h2>Reading Paths</h2>'
+      + '<p>Guided curricula that cut across categories. '
+      + 'Each path builds from fundamentals to mastery.</p></div>';
+
+    PATHS.forEach(function(path) {
+      var total = path.books.length;
+      var done = 0;
+      path.books.forEach(function(b) {
+        if (read[b.k]) done++;
+      });
+      var pct = total ? Math.round(done / total * 100) : 0;
+
+      html += '<div class="path-card" data-path="' + path.id + '">'
+        + '<div class="path-header" onclick="togglePath(\'' + path.id + '\')">'
+        + '<span class="path-icon">' + path.icon + '</span>'
+        + '<div class="path-info">'
+        + '<div class="path-title">' + path.title + '</div>'
+        + '<div class="path-desc">' + path.desc + '</div>'
+        + '</div>'
+        + '<div class="path-meta">'
+        + '<span class="path-difficulty ' + path.difficulty + '">'
+        + path.difficulty.charAt(0).toUpperCase()
+        + path.difficulty.slice(1) + '</span>'
+        + '<div class="path-stat">'
+        + '<div class="path-stat-num">' + done + '/' + total + '</div>'
+        + '<div class="path-stat-label">Read</div>'
+        + '</div>'
+        + '</div>'
+        + '<span class="path-chevron">&#9654;</span>'
+        + '</div>'
+        + '<div class="path-progress-bar"><div class="fill" style="width:'
+        + pct + '%"></div></div>'
+        + '<div class="path-body" id="path-body-' + path.id + '">';
+
+      path.books.forEach(function(b, i) {
+        var info = allBookMap[b.k] || {
+          title: b.k.replace(/-/g, ' '),
+          author: '', starred: false
+        };
+        var isRead = !!read[b.k];
+        html += '<div class="path-step' + (isRead ? ' read' : '') + '">'
+          + '<span class="path-step-num">' + (i + 1) + '</span>'
+          + '<div class="path-step-info">'
+          + '<div class="path-step-title">'
+          + (info.starred ? '<span class="star">&#9733;</span> ' : '')
+          + info.title
+          + (info.author ? ' <span class="author">'
+          + info.author + '</span>' : '')
+          + '</div>'
+          + '<div class="path-step-why">' + b.why + '</div>'
+          + '</div></div>';
+      });
+
+      html += '</div></div>';
+    });
+
+    document.getElementById('pathsView').innerHTML = html;
+  }
+
+  window.togglePath = function(id) {
+    var body = document.getElementById('path-body-' + id);
+    var card = body.closest('.path-card');
+    var header = card.querySelector('.path-header');
+    var isOpen = body.classList.contains('open');
+
+    if (isOpen) {
+      body.classList.remove('open');
+      header.classList.remove('open');
+    } else {
+      body.classList.add('open');
+      header.classList.add('open');
+    }
   };
 
   render();
