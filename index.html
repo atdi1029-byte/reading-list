@@ -449,6 +449,140 @@
     .container { padding: 0 15px 40px; }
   }
 
+  /* ---- Reader Settings ---- */
+  .settings-toggle {
+    background: rgba(0,0,0,0.05);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    padding: 4px 14px;
+    border-radius: 16px;
+    cursor: pointer;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s;
+    margin-top: 10px;
+  }
+  .settings-toggle:hover { background: rgba(0,0,0,0.08); color: var(--text); }
+  .settings-toggle.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .settings-panel {
+    max-width: 800px;
+    margin: 10px auto 0;
+    background: var(--section-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    display: none;
+    padding: 16px 20px;
+  }
+  .settings-panel.open { display: block; }
+  .settings-inner {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px 28px;
+    align-items: center;
+  }
+  .setting-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+  }
+  .setting-row:last-child { margin-bottom: 0; }
+  .setting-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 500;
+  }
+  .setting-controls {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .setting-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    color: var(--text);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+  }
+  .setting-btn:hover { background: var(--accent-light); }
+  .setting-value {
+    font-size: 12px;
+    color: var(--text);
+    min-width: 32px;
+    text-align: center;
+    font-weight: 600;
+  }
+  .theme-swatches { display: flex; gap: 6px; }
+  .theme-swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.2s;
+  }
+  .theme-swatch:hover { border-color: var(--accent); }
+  .theme-swatch.active { border-color: var(--accent); box-shadow: 0 0 0 2px var(--accent-light); }
+  .theme-swatch.t-warm { background: #faf8f4; border-color: #e8e2d6; }
+  .theme-swatch.t-warm.active { border-color: var(--accent); }
+  .theme-swatch.t-cool { background: #f4f6fa; }
+  .theme-swatch.t-dark { background: #1a1a2e; }
+  .theme-swatch.t-sepia { background: #f1e7d0; }
+  .font-picker { display: flex; gap: 4px; }
+  .font-opt {
+    padding: 3px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    font-size: 11px;
+    cursor: pointer;
+    color: var(--text);
+  }
+  .font-opt:hover { background: var(--accent-light); }
+  .font-opt.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .font-opt.f-serif { font-family: 'Playfair Display', serif; }
+  .font-opt.f-sans { font-family: 'Inter', sans-serif; }
+  .font-opt.f-mono { font-family: 'Courier New', monospace; }
+
+  body.theme-dark {
+    --bg: #1a1a2e;
+    --text: #e0ddd5;
+    --muted: #8a8a9a;
+    --accent: #c4a33a;
+    --accent-light: #2a2a3e;
+    --border: #333348;
+    --section-bg: #22223a;
+    --star: #c4a33a;
+  }
+  body.theme-cool {
+    --bg: #f4f6fa;
+    --text: #1e2a3a;
+    --muted: #6b7a8e;
+    --accent: #2a6cb6;
+    --accent-light: #e4ecf5;
+    --border: #d0d8e4;
+    --section-bg: #fff;
+    --star: #c4a33a;
+  }
+  body.theme-sepia {
+    --bg: #f1e7d0;
+    --text: #3a2e1a;
+    --muted: #7a6b52;
+    --accent: #8b5e14;
+    --accent-light: #e8dcc4;
+    --border: #d4c8a8;
+    --section-bg: #faf2e0;
+    --star: #c4a33a;
+  }
+
   /* ---- Reading Order Phases ---- */
   .phase-btn {
     background: rgba(0,0,0,0.05);
@@ -575,6 +709,52 @@
   <div class="search-wrap">
     <input type="text" id="searchInput" placeholder="Search 500+ books..." autocomplete="off">
     <button class="clear-search" id="clearSearch" onclick="clearSearch()">&times;</button>
+  </div>
+  <button class="settings-toggle" id="settingsToggle" onclick="toggleSettings()">&#9881; Settings</button>
+  <div class="settings-panel" id="settingsPanel">
+    <div class="settings-inner">
+      <div class="setting-row">
+        <span class="setting-label">Size</span>
+        <div class="setting-controls">
+          <button class="setting-btn" onclick="adjustSize(-1)">-</button>
+          <span class="setting-value" id="sizeVal">14px</span>
+          <button class="setting-btn" onclick="adjustSize(1)">+</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Spacing</span>
+        <div class="setting-controls">
+          <button class="setting-btn" onclick="adjustSpacing(-0.1)">-</button>
+          <span class="setting-value" id="spacingVal">1.5</span>
+          <button class="setting-btn" onclick="adjustSpacing(0.1)">+</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Width</span>
+        <div class="setting-controls">
+          <button class="setting-btn" onclick="adjustWidth(-50)">-</button>
+          <span class="setting-value" id="widthVal">900</span>
+          <button class="setting-btn" onclick="adjustWidth(50)">+</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Font</span>
+        <div class="font-picker">
+          <button class="font-opt f-sans active" onclick="setFont('sans')">Sans</button>
+          <button class="font-opt f-serif" onclick="setFont('serif')">Serif</button>
+          <button class="font-opt f-mono" onclick="setFont('mono')">Mono</button>
+        </div>
+      </div>
+      <div class="setting-row">
+        <span class="setting-label">Theme</span>
+        <div class="theme-swatches">
+          <div class="theme-swatch t-warm active" onclick="setTheme('warm')" title="Warm"></div>
+          <div class="theme-swatch t-cool" onclick="setTheme('cool')" title="Cool"></div>
+          <div class="theme-swatch t-sepia" onclick="setTheme('sepia')" title="Sepia"></div>
+          <div class="theme-swatch t-dark" onclick="setTheme('dark')" title="Dark"></div>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -4004,5 +4184,87 @@
 })();
 </script>
 <script>if('serviceWorker' in navigator) navigator.serviceWorker.register('service-worker.js');</script>
+
+<script>
+(function(){
+  var defaults = {fontSize:14, lineSpacing:1.5, maxWidth:900, font:'sans', theme:'warm'};
+  var s;
+  try { s = JSON.parse(localStorage.getItem('rl-reader-settings')) || {}; } catch(e) { s = {}; }
+  var fontSize = s.fontSize || defaults.fontSize;
+  var lineSpacing = s.lineSpacing || defaults.lineSpacing;
+  var maxWidth = s.maxWidth || defaults.maxWidth;
+  var currentFont = s.font || defaults.font;
+  var currentTheme = s.theme || defaults.theme;
+
+  function save() {
+    localStorage.setItem('rl-reader-settings', JSON.stringify({
+      fontSize:fontSize, lineSpacing:lineSpacing, maxWidth:maxWidth,
+      font:currentFont, theme:currentTheme
+    }));
+  }
+
+  function applyAll() {
+    var container = document.querySelector('.container');
+    if (container) container.style.maxWidth = maxWidth + 'px';
+    document.body.style.fontSize = fontSize + 'px';
+    document.body.style.lineHeight = lineSpacing;
+    // Scale book list items and other elements
+    var scale = fontSize / defaults.fontSize;
+    document.querySelectorAll('.book-list li').forEach(function(li) {
+      li.style.fontSize = fontSize + 'px';
+    });
+    document.querySelectorAll('.section-title').forEach(function(t) {
+      t.style.fontSize = (16 * scale) + 'px';
+    });
+    document.querySelectorAll('.tier-header').forEach(function(t) {
+      t.style.fontSize = (14 * scale) + 'px';
+    });
+    document.querySelectorAll('.author').forEach(function(a) {
+      a.style.fontSize = ((fontSize - 2) > 10 ? (fontSize - 2) : 10) + 'px';
+    });
+    var fonts = {
+      sans: "'Inter', sans-serif",
+      serif: "'Playfair Display', Georgia, serif",
+      mono: "'Courier New', monospace"
+    };
+    document.body.style.fontFamily = fonts[currentFont];
+    document.getElementById('sizeVal').textContent = fontSize + 'px';
+    document.getElementById('spacingVal').textContent = lineSpacing.toFixed(1);
+    document.getElementById('widthVal').textContent = maxWidth;
+    document.body.className = currentTheme === 'warm' ? '' : 'theme-' + currentTheme;
+    document.querySelectorAll('.theme-swatch').forEach(function(sw) {
+      sw.classList.toggle('active', sw.classList.contains('t-' + currentTheme));
+    });
+    document.querySelectorAll('.font-opt').forEach(function(b) {
+      b.classList.toggle('active', b.classList.contains('f-' + currentFont));
+    });
+  }
+
+  window.toggleSettings = function() {
+    document.getElementById('settingsPanel').classList.toggle('open');
+    document.getElementById('settingsToggle').classList.toggle('active');
+  };
+  window.adjustSize = function(d) {
+    fontSize = Math.max(10, Math.min(22, fontSize + d));
+    applyAll(); save();
+  };
+  window.adjustSpacing = function(d) {
+    lineSpacing = Math.max(1.0, Math.min(2.5, +(lineSpacing + d).toFixed(1)));
+    applyAll(); save();
+  };
+  window.adjustWidth = function(d) {
+    maxWidth = Math.max(500, Math.min(1400, maxWidth + d));
+    applyAll(); save();
+  };
+  window.setFont = function(f) {
+    currentFont = f; applyAll(); save();
+  };
+  window.setTheme = function(t) {
+    currentTheme = t; applyAll(); save();
+  };
+
+  applyAll();
+})();
+</script>
 </body>
 </html>
