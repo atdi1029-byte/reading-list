@@ -1,1 +1,1 @@
-const CACHE_NAME = 'reading-list-v6';
+const CACHE_NAME = 'reading-list-v7';
