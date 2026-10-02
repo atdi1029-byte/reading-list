@@ -226,7 +226,8 @@
     margin-top: 6px;
   }
   .book-desc-panel.open { display: block; }
-  .book-desc-panel .read-toggle-btn {
+  .book-desc-panel .read-toggle-btn,
+  .book-desc-panel .bm-toggle-btn {
     display: inline-block;
     margin-top: 8px;
     padding: 3px 14px;
@@ -239,14 +240,55 @@
     cursor: pointer;
     transition: all 0.15s;
   }
-  .book-desc-panel .read-toggle-btn:hover {
+  .book-desc-panel .read-toggle-btn:hover,
+  .book-desc-panel .bm-toggle-btn:hover {
     background: var(--accent);
     color: #fff;
   }
+  .book-desc-panel .bm-toggle-btn { margin-left: 8px; }
   .book-list li.read .book-desc-panel {
     text-decoration: none;
     opacity: 1;
   }
+
+  /* ---- Bookmark (where I left off) ---- */
+  .book-list li.bookmarked {
+    background: var(--accent-light);
+    box-shadow: inset 3px 0 0 var(--accent);
+    border-radius: 4px;
+    padding-left: 10px;
+    padding-right: 6px;
+  }
+  .book-list li.bookmarked::before {
+    content: '\1F516';
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .book-list li.bookmarked .bm-toggle-btn {
+    background: var(--accent);
+    color: #fff;
+    border-color: var(--accent);
+  }
+  .bookmark-jump {
+    display: none;
+    max-width: 400px;
+    width: 100%;
+    margin: 14px auto 0;
+    padding: 9px 18px;
+    border: 1px solid var(--accent);
+    border-radius: 24px;
+    background: var(--accent);
+    color: #fff;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: opacity 0.2s;
+  }
+  .bookmark-jump:hover { opacity: 0.88; }
 
   .filters {
     display: flex;
@@ -710,6 +752,7 @@
     <input type="text" id="searchInput" placeholder="Search 500+ investment books..." autocomplete="off">
     <button class="clear-search" id="clearSearch" onclick="clearSearch()">&times;</button>
   </div>
+  <button class="bookmark-jump" id="bookmarkJump" onclick="goToBookmark()"></button>
   <button class="settings-toggle" id="settingsToggle" onclick="toggleSettings()">&#9881; Settings</button>
   <div class="settings-panel" id="settingsPanel">
     <div class="settings-inner">
@@ -2362,7 +2405,8 @@
 
   function bookKey(li) {
     var clone = li.cloneNode(true);
-    clone.querySelectorAll('.author, .note, .star').forEach(function(el) { el.remove(); });
+    // .book-desc-panel must go too: an open description used to end up in the key
+    clone.querySelectorAll('.author, .note, .star, .book-desc-panel').forEach(function(el) { el.remove(); });
     return clone.textContent.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '').substring(0, 80);
   }
 
@@ -2793,6 +2837,7 @@
     var nr = document.getElementById('noResults');
     if (nr) nr.style.display = (searchTerm && !anyVisible) ? 'block' : 'none';
     renderRecs();
+    renderBookmark();
   }
 
   // Dynamic scoring: every book gets a position in every list.
@@ -4431,6 +4476,115 @@
     }
   }
 
+  // ---- Bookmark: one marker for where I left off ----
+  // Kept locally as {book, n, sec, title, ts} ({deleted, ts} once removed) and in the cloud
+  // through the Books bookmark actions: newest ts wins, removing leaves a tombstone.
+  var BM_LS = 'readinglist_bookmark';
+  var BM_CLOUD_KEY = 'masterlist_bookmark';
+
+  function getBookmark() {
+    try { return JSON.parse(localStorage.getItem(BM_LS)); } catch(e) { return null; }
+  }
+  function saveBookmark(bm) { localStorage.setItem(BM_LS, JSON.stringify(bm)); }
+
+  function sectionNum(el) {
+    var numEl = el.closest('.section').querySelector('.section-num');
+    return numEl ? parseInt(numEl.textContent, 10) : 0;
+  }
+
+  function bookTitle(li) {
+    var clone = li.cloneNode(true);
+    clone.querySelectorAll('.author, .note, .star, .book-desc-panel').forEach(function(el) { el.remove(); });
+    return clone.textContent.trim().replace(/\s+/g, ' ');
+  }
+
+  // Books with the same title share a key (some are listed twice, some are different
+  // books), so the bookmark also keeps which copy it is: n = position among them
+  function sameKeyLis(key) {
+    return Array.prototype.filter.call(document.querySelectorAll('.book-list li'), function(li) {
+      return (li.dataset.bookKey || bookKey(li)) === key;
+    });
+  }
+
+  function findBookmarkLi(bm) {
+    if (!bm || bm.deleted || !bm.book) return null;
+    var lis = sameKeyLis(bm.book);
+    return lis[bm.n || 0] || lis[0] || null;
+  }
+
+  function renderBookmark() {
+    var bm = getBookmark();
+    var target = findBookmarkLi(bm);
+    document.querySelectorAll('.book-list li.bookmarked').forEach(function(li) {
+      if (li !== target) li.classList.remove('bookmarked');
+    });
+    if (target) target.classList.add('bookmarked');
+    document.querySelectorAll('.bm-toggle-btn').forEach(function(btn) {
+      btn.textContent = btn.closest('li') === target ? 'Remove Bookmark' : 'Bookmark Here';
+    });
+    var jump = document.getElementById('bookmarkJump');
+    if (!jump) return;
+    var has = !!(bm && !bm.deleted && bm.book);
+    jump.style.display = has ? 'block' : 'none';
+    if (has) jump.textContent = '🔖 Continue: ' + (target ? bookTitle(target) : (bm.title || bm.book));
+  }
+
+  function pushBookmark(bm) {
+    var data = bm.deleted ? '' : JSON.stringify(bm);
+    jsonpFetch(SYNC_URL + '?action=set_bookmark&key=' + BM_CLOUD_KEY + '&data=' + encodeURIComponent(data))
+      .catch(function() {});  // offline: syncBookmark sends it on the next open
+  }
+
+  function syncBookmark() {
+    jsonpFetch(SYNC_URL + '?action=get_bookmarks').then(function(data) {
+      if (!data || data.status !== 'ok' || !data.bookmarks) return;
+      var local = getBookmark();
+      var remote = data.bookmarks[BM_CLOUD_KEY];
+      var clearedAt = (data.deleted && data.deleted[BM_CLOUD_KEY]) || 0;
+      var localTs = local ? (local.ts || 0) : -1;
+      var remoteTs = remote ? (remote.ts || 0) : (clearedAt || -1);
+      if (remoteTs > localTs) {
+        saveBookmark(remote || { deleted: true, ts: clearedAt });
+        renderBookmark();
+      } else if (localTs > remoteTs && (remote || !local.deleted)) {
+        pushBookmark(local);
+      }
+    }).catch(function() {});
+  }
+
+  function toggleBookmark(li) {
+    var prev = getBookmark();
+    var ts = Math.max(Date.now(), ((prev && prev.ts) || 0) + 1);
+    var key = li.dataset.bookKey || bookKey(li);
+    var bm = findBookmarkLi(prev) === li
+      ? { deleted: true, ts: ts }
+      : { book: key, n: sameKeyLis(key).indexOf(li), sec: sectionNum(li), title: bookTitle(li), ts: ts };
+    saveBookmark(bm);
+    renderBookmark();
+    pushBookmark(bm);
+  }
+
+  window.goToBookmark = function() {
+    var bm = getBookmark();
+    var li = findBookmarkLi(bm);
+    if (!li) {
+      // The book is no longer in the list: go to its section instead
+      var sec = bm && Array.prototype.filter.call(document.querySelectorAll('.section'), function(s) {
+        return sectionNum(s) === bm.sec;
+      })[0];
+      if (sec) sec.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    if (li.style.display === 'none') {
+      // Hidden by the filter or a search
+      searchInput.value = '';
+      searchTerm = '';
+      clearBtn.style.display = 'none';
+      window.setFilter('all');
+    }
+    li.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
   // Click: expand/collapse description, or toggle read if no description
   document.addEventListener('click', function(e) {
     var sel = window.getSelection();
@@ -4440,6 +4594,12 @@
       e.stopPropagation();
       var li = e.target.closest('.book-list li');
       if (li) toggleRead(li);
+      return;
+    }
+    if (e.target.classList.contains('bm-toggle-btn')) {
+      e.stopPropagation();
+      var bmLi = e.target.closest('.book-list li');
+      if (bmLi) toggleBookmark(bmLi);
       return;
     }
     var li = e.target.closest('.book-list li');
@@ -4461,7 +4621,9 @@
       var isRead = li.classList.contains('read');
       panel.innerHTML = '<span>' + desc + '</span><br>'
         + '<button class="read-toggle-btn">'
-        + (isRead ? 'Mark Unread' : 'Mark Read') + '</button>';
+        + (isRead ? 'Mark Unread' : 'Mark Read') + '</button>'
+        + '<button class="bm-toggle-btn">'
+        + (li.classList.contains('bookmarked') ? 'Remove Bookmark' : 'Bookmark Here') + '</button>';
       li.appendChild(panel);
     }
   });
@@ -4494,10 +4656,11 @@
 
   // Cloud sync on load
   syncFromCloud();
+  syncBookmark();
 
   // Re-sync when app comes to foreground
   document.addEventListener('visibilitychange', function() {
-    if (document.visibilityState === 'visible') syncFromCloud();
+    if (document.visibilityState === 'visible') { syncFromCloud(); syncBookmark(); }
   });
 })();
 </script>
